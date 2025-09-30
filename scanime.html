@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splash Screen</title>
+    <link rel="stylesheet" href="scanime.css">
+    <link rel="stylesheet" href="scanime2.css">
+    <link rel = "icon" type = "image/jpeg" href = "Images/images/favicon.jpeg" >
+</head>
+<header>
+    <div class="header">
+        <div class="falcon">
+            <img src="Images/images/main logo.png" class="main-image" alt="Main Logo">
+        </div>
+        <div class="brand">
+            <img src="Images/images/scanime-writelogo-removebg-preview.png" class="brand-name" alt="scanime">
+        </div>
+        <div class="home header-Btn">Home</div>
+        <div class="trending header-Btn">Trending</div>
+        <div class="genre header-Btn">Genre</div>
+        <div class="myList header-Btn">My List</div>
+        <div class="about header-Btn">About</div>
+        
+    </div>
+</header>
+<body>
+    <div class="splash">
+        <div class="stars-container"></div>
+        <div class="splash-screen" id="splash">
+            <img class="splash-image animate" src="Images/images/sticker.png" alt="App Logo" />
+            <div class="shine"></div>
+            <p class="loading-text">INITIALIZING</p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Search Bar -->
+         <div class="search-container">
+            <form action="/search" method="get" class="search-form">
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    name="query"
+                    placeholder="Search the Anime..."
+                    aria-label="Search"
+                />
+                <button type="submit" class="search-button" id="searchBtn">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </form>
+            <!-- Moved clear button outside the form -->
+            <button type="button" class="clear-button" id="clearBtn" style="display: none;">
+                <svg class="clear-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div id="results"></div>
+        
+        <!-- Anime of the Day Section -->
+        <div class="aotd-section reveal">
+            <h2>Anime of the Day</h2>
+            <div id="anime-of-the-day-container" class="aotd-container">
+                <!-- Anime of the day will be loaded here by JavaScript -->
+            </div>
+
+        </div>
+        <h2>Genre</h2>
+        <div class="genre-container reveal" style="display: flex; justify-content: space-between;">
+            <div class="genre-card card" id="genre-action" >
+                <img src="Images/images/63520c0f00d334665064a21b-sailor-moon-season-1-part-1-dvd-only-removebg-preview.png" alt="Fantasy">
+                <p>Fantasy</p>
+                
+            </div>
+            <div class="genre-card card" id="genre-adventure">
+                <img src="Images/images/Ash_Ketchum-removebg-preview.png" alt="Adventure">
+                <p>Adventure</p>
+            </div>
+            <div class="genre-card card" id="genre-comedy">
+                <img src="Images/images/gintoki-sakata-gin-tama-kagura-samurai-anime-body-transparent-background-png-clipart--comhiclipartmthka-removebg-preview.png" alt="Comedy">
+                <p>Comedy</p>
+            </div>
+            <div class="genre-card card" id="genre-drama">
+                <img src="Images/images/49ba2479e05d6599533d2430b472b7ee-removebg-preview.png" alt="Drama">
+                <p>Drama</p>
+            </div>
+            <div class="genre-card card" id="genre-fantasy">
+                <div style="object-fit: contain; width: 20rem; height: 20rem; margin-top: -1rem;"><img src="Images/images/goku-removebg-preview.png" alt="Action"></div>
+                <p>Action</p>
+            </div>
+        </div>
+        
+        <h2>Trending</h2>
+        <div class="carousel-container reveal">
+            <div class="carousel" id="carousel">
+              <div class="card"><img src="Images/images/Death-Note anime.jpg" alt="Death-Note"><p>Death Note</p></div>
+              <div class="card"><img src="Images/images/one-piece.jpg" alt="one-piece"><p>One Piece</p></div>
+              <div class="card"><img src="Images/images/naruto.jpg" alt="Train Track"><p>Naruto</p></div>
+              <div class="card"><img src="Images/images/demon-anime.jpg" alt="Gamer"><p>Demon Slayer</p></div>
+              <div class="card"><img src="Images/images/dragon ball.jpg" alt="Gift"><p>Dragon Ball Z</p></div>
+              <div class="card"><img src="Images/images/full-metal anime.jpg" alt="Accessories"><p>Full Metal Alchemist</p></div>
+              <div class="card"><img src="Images/images/jujutsu anime.jpg" alt="Dress"><p>Jujutsu Kaisen</p></div>
+              <div class="card"><img src="/Images/images/myhacademy-anime.jpg" alt="Train Track"><p>My Hero Academia</p></div>
+              <div class="card"><img src="Images/images/bleach.jpg" alt="Gamer"><p>Bleach</p></div>
+              <div class="card"><img src="Images/images/aot-anime.jpg" alt="Gift"><p>Attack On Titan</p></div>
+              
+            </div>
+        </div>
+        <div class="particle">
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-extrabold text-violet-400 mb-2">Multi-Card Particle Reveal</h1>
+                <p class="text-lg text-gray-400">Each card has an independent, randomly moving particle field. Hover to activate.</p>
+            </div>
+
+            <div class="main-container">
+                
+                <!-- Card 1 -->
+                <div class="card-wrapper" data-color="#ff88ff">
+                    <canvas class="particle-canvas"></canvas>
+                    <div class="card-content">
+                        <h3 style="color: #ff88ff;">Anime Discovery</h3>
+                        <p>Discover Your Next Obsession</p>
+                        <ul class="p1">
+                            <li>Transforms searching into a joyful journey of discovery.</li>
+                            <li>Main goal: inspire interest in anime culture and titles.</li>
+                            <li>Provides a fun, easy, and engaging experience for all viewers, new and experienced.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card-wrapper" data-color="#00ffff">
+                    <canvas class="particle-canvas"></canvas>
+                    <div class="card-content">
+                        <h3 style="color: #00ffff;">Frontend Showcase</h3>
+                        <p>Crafted with Code & Skill</p>
+                        <ul class="p1">
+                            <li>Pure frontend project (HTML, CSS, JavaScript).</li>
+                            <li>Showcases ability to integrate external data.</li>
+                            <li>Reliably uses the Jikan API.</li>
+                            <li>Delivers a high-quality, modern web application.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card-wrapper" data-color="#ffcc00">
+                    <canvas class="particle-canvas"></canvas>
+                    <div class="card-content">
+                        <h3 style="color: #ffcc00;"> Motion & User Experience
+</h3>
+                        <p>Seamless Motion UX</p>
+                        <ul class="p1">
+                            <li>Uses anime.js for a premium, interactive experience.</li>
+                            <li>Animations provide clear visual feedback.</li>
+                            <li>Transitions are subtle and enhance user flow.</li>
+                            <li>The goal is to deeply improve the overall User Experience (UX).</li>
+                        </ul>
+                    </div>
+                </div>
+                
+            </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script> -->
+    <script src="scanime2.js"></script>
+    <script src="scanime.js"></script>
+    
+
+</body>
+</html>

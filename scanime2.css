@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+.particle {
+    font-family: 'Inter', sans-serif;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding: 2rem 1rem;
+}
+
+.main-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7rem;
+    justify-content: center;
+    max-width: 100%;
+}
+
+.card-wrapper {
+    position: relative;
+    width: 20rem; /* Smaller width for multi-card layout */
+    height: 25rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.card-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.3);
+}
+
+/* The canvas is positioned absolute to fill the wrapper */
+.particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* The main card content that will fade in/out */
+.card-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(31, 41, 55, 0.9);
+    z-index: 2;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+    opacity: 0; /* STARTING HIDDEN */
+}
+
+.card-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.card-content p {
+    font-size: 1.2rem;
+    color: #9ca3af;
+}
+
+/* Styling for the new unordered list inside the card */
+.card-content .p1 {
+   /* Removes the default bullet points */
+    padding: 1.5rem; /* Removes the default left padding */
+    text-align: left; /* Aligns text to the left for readability */
+    font-size: 0.75rem;
+}
+
+.reveal {
+    position: relative;
+    /* Initial state for elements that haven't been revealed yet */
+    transform: translateY(50px);
+    opacity: 0; /* Initially invisible */
+    /* Remove the CSS transition here, Anime.js will handle it */
+    /* transition: all 1s ease-in-out; */
+}

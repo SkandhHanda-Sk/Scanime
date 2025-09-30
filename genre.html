@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Flow Card Selector - Looping</title>
+    <!-- Load Tailwind CSS -->
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <!-- Load Anime.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        /* Base styling for the floating elements (emojis) */
+        .floating-element {
+            position: absolute;
+            line-height: 1;
+            transform: translate(-50%, -50%); /* Center the element around the specified coordinates */
+            pointer-events: none; /* Allows clicks to pass through */
+            filter: brightness(1.2); /* Make the emoji slightly brighter */
+        }
+
+        /* Container for each card - CRITICAL for local animation boundaries */
+        .card-container {
+            position: relative;
+            height: 300px; /* Fixed height for consistent animation space */
+            overflow: hidden; /* Elements fade out cleanly at the top */
+        }
+
+        /* Use Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Hide horizontal scrollbars */
+            min-height: 100vh;
+        }
+
+        /* Custom width for cards in the horizontal layout */
+        .card-item {
+            min-width: 250px; /* Ensure cards are wide enough */
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        /* Style for the active/selected card: A strong border and slight scaling */
+        .card-item.active {
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.7), 0 10px 20px rgba(0, 0, 0, 0.5); 
+            transform: scale(1.05); /* Slightly bigger when active */
+        }
+    </style>
+    <script>
+        // Global configuration for Anime.js
+        const DURATION_BASE = 3000; 
+        const SPAWN_INTERVAL = 250; 
+        const GLOW_COLORS = [
+            '255, 105, 180', '255, 0, 0', '255, 192, 203', '255, 69, 0', '144, 238, 144', '255, 255, 0'
+        ];
+        const MIN_FONT_SIZE = 20;
+        const MAX_FONT_SIZE = 40;
+
+        // --- Looping Setup ---
+        const originalCardConfigs = [
+            { id: 'heart-card', emoji: '❤️', title: 'Heart Flow', color: 'bg-red-600' },
+            { id: 'bubble-card', emoji: '⚪', title: 'Bubble Flow', color: 'bg-blue-400' },
+            { id: 'star-card', emoji: '⭐', title: 'Star Flow', color: 'bg-yellow-400' },
+            { id: 'thunder-card', emoji: '⚡', title: 'Thunder Flow', color: 'bg-purple-600' },
+            { id: 'leaf-card', emoji: '🍃', title: 'Leaf Flow', color: 'bg-green-600' }
+        ];
+        const CARD_LENGTH = originalCardConfigs.length;
+        
+        // Create 3 sets of cards for seamless visual looping (Set 1, Set 2 (middle), Set 3)
+        const cardConfigs = [];
+        for (let i = 0; i < 3; i++) {
+            originalCardConfigs.forEach((config, j) => {
+                cardConfigs.push({
+                    // Create a unique ID for each duplicated card element
+                    id: `${config.id}-${i}`, 
+                    emoji: config.emoji,
+                    title: config.title,
+                    color: config.color,
+                    originalIndex: j // Keep track of the actual content index (0-4)
+                });
+            });
+        }
+        
+        // Start in the middle section (index 5 for a length of 5)
+        let activeCardIndex = CARD_LENGTH; 
+        let animationIntervals = new Array(cardConfigs.length).fill(null); 
+        let isScrolling = false; // Flag to prevent rapid scroll issues during transition
+        // -----------------------
+
+        /**
+         * Creates a new element (emoji) and appends it to a specific container.
+         * @param {string} emoji - The Unicode character to display.
+         * @param {string} containerId - The ID of the HTML element to contain the flow.
+         * @returns {HTMLElement} The created element.
+         */
+        function createElement(emoji, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return null;
+
+            const element = document.createElement('span');
+            element.className = 'floating-element';
+            element.innerHTML = emoji;
+            
+            const fontSize = anime.random(MIN_FONT_SIZE, MAX_FONT_SIZE);
+            const colorRgb = GLOW_COLORS[anime.random(0, GLOW_COLORS.length - 1)];
+
+            element.style.fontSize = `${fontSize}px`;
+            // Apply text-shadow for the glowing effect
+            element.style.textShadow = `0 0 ${fontSize / 3}px rgba(${colorRgb}, 0.8), 0 0 ${fontSize / 6}px rgba(${colorRgb}, 0.5)`;
+
+            // Get container dimensions for positioning
+            const containerRect = container.getBoundingClientRect();
+
+            // Randomize starting position at the bottom of the container
+            const startX = anime.random(20, containerRect.width - 20);
+            element.style.left = `${startX}px`;
+            element.style.top = `${containerRect.height}px`; // Start just outside the bottom
+            
+            container.appendChild(element);
+            return element;
+        }
+
+        /**
+         * Animates a given element using Anime.js to flow upwards.
+         * @param {HTMLElement} element - The element to animate.
+         */
+        function animateElement(element) {
+            const container = element.parentElement;
+            if (!container) return;
+
+            const containerHeight = container.offsetHeight;
+
+            // Travel distance is the full height of the container, plus some overflow
+            const travelDistance = -containerHeight * 1.2;
+            
+            const duration = DURATION_BASE + anime.random(-500, 500); 
+            const delay = anime.random(0, 300);
+
+            anime({
+                targets: element,
+                easing: 'linear',
+                delay: delay,
+                duration: duration,
+                
+                translateY: [
+                    { value: travelDistance, duration: duration, easing: 'easeOutSine' }
+                ],
+                translateX: [
+                    { value: anime.random(-30, 30), duration: duration * 0.5, easing: 'easeInOutSine' },
+                    { value: anime.random(-30, 30), duration: duration * 0.5, easing: 'easeInOutSine' }
+                ],
+                // Opacity: starts at 0, goes to 1, then fades to 0 (at 0%, 50%, and 100% of the duration)
+                opacity: [0, 1, 0], 
+                
+                scale: [
+                    { value: [0, 1], duration: 500 }, 
+                    { value: 1.2, duration: duration * 0.5, easing: 'easeOutQuad' }, 
+                    { value: 1, duration: duration * 0.5 }
+                ],
+                
+                complete: function(anim) {
+                    element.remove();
+                }
+            });
+        }
+
+        /**
+         * Starts the continuous flow animation for a single card by its index in the full array.
+         */
+        function startFlow(index) {
+            const config = cardConfigs[index];
+            if (!config) return;
+
+            stopFlow(index); 
+
+            // The interval is now stored by the *current* index
+            const intervalId = setInterval(() => {
+                const element = createElement(config.emoji, config.id);
+                if (element) {
+                    animateElement(element);
+                }
+            }, SPAWN_INTERVAL); 
+
+            animationIntervals[index] = intervalId;
+        }
+        
+        /**
+         * Stops the continuous flow animation for a single card by its index.
+         */
+        function stopFlow(index) {
+            if (animationIntervals[index] !== null) {
+                clearInterval(animationIntervals[index]);
+                animationIntervals[index] = null;
+
+                // Also clear any elements that might still be floating for a clean stop
+                const container = document.getElementById(cardConfigs[index].id);
+                if (container) {
+                     container.querySelectorAll('.floating-element').forEach(el => el.remove());
+                }
+            }
+        }
+
+        /**
+         * Checks if the current index is in a buffer zone (first or third set) and instantly jumps the scroll back.
+         */
+        function checkForLoopJump() {
+            const container = document.getElementById('card-row');
+            let jumpIndex = -1;
+            
+            // If in the third set (end buffer)
+            if (activeCardIndex >= CARD_LENGTH * 2) { 
+                jumpIndex = activeCardIndex - CARD_LENGTH;
+            } 
+            // If in the first set (start buffer)
+            else if (activeCardIndex < CARD_LENGTH) { 
+                jumpIndex = activeCardIndex + CARD_LENGTH;
+            }
+
+            if (jumpIndex !== -1) {
+                const targetCardElement = document.getElementById(cardConfigs[jumpIndex].id).closest('.card-item');
+                if (targetCardElement) {
+                    // Stop animation and un-highlight the card we are jumping FROM
+                    stopFlow(activeCardIndex); 
+                    document.getElementById(cardConfigs[activeCardIndex].id).closest('.card-item')?.classList.remove('active');
+
+                    // 1. Calculate the instant scroll position (targetCardElement in the middle set)
+                    const cardWidth = targetCardElement.offsetWidth;
+                    const containerWidth = container.offsetWidth;
+                    const targetScrollPosition = targetCardElement.offsetLeft - (containerWidth / 2) + (cardWidth / 2);
+
+                    // 2. Perform instantaneous scroll jump
+                    container.scrollLeft = targetScrollPosition;
+
+                    // 3. Update active index to the new position
+                    activeCardIndex = jumpIndex;
+
+                    // 4. Restart flow/highlight on the new (now visible) element ID
+                    startFlow(activeCardIndex); 
+                    document.getElementById(cardConfigs[activeCardIndex].id).closest('.card-item')?.classList.add('active');
+                }
+            }
+        }
+        
+        /**
+         * Core logic to switch the active card, update UI, and toggle animations.
+         * @param {number} newIndex - The index of the card in the triplicated array to become active.
+         */
+        function updateActiveCard(newIndex) {
+            // Guard clause: do nothing if the card is already active
+            if (newIndex === activeCardIndex) {
+                return;
+            }
+            
+            // Stop animation and un-highlight the previous active card
+            stopFlow(activeCardIndex);
+            
+            const prevCardElement = document.getElementById(cardConfigs[activeCardIndex].id).closest('.card-item');
+            if (prevCardElement) {
+                prevCardElement.classList.remove('active');
+            }
+
+            // Update the active index
+            activeCardIndex = newIndex;
+
+            // Start animation and highlight the new active card
+            startFlow(activeCardIndex);
+
+            const newCardElement = document.getElementById(cardConfigs[activeCardIndex].id).closest('.card-item');
+            if (newCardElement) {
+                newCardElement.classList.add('active');
+                
+                // Scroll the container to visually center the active card
+                const container = document.getElementById('card-row');
+                const cardWidth = newCardElement.offsetWidth;
+                const containerWidth = container.offsetWidth;
+                
+                // Calculate scroll position to center the card
+                const scrollPosition = newCardElement.offsetLeft - (containerWidth / 2) + (cardWidth / 2);
+                
+                isScrolling = true;
+                
+                anime({
+                    targets: container,
+                    scrollLeft: scrollPosition,
+                    duration: 500,
+                    easing: 'easeInOutQuad',
+                    complete: () => {
+                        isScrolling = false;
+                        checkForLoopJump(); // Check for and execute loop jump after the scroll animation finishes
+                    }
+                });
+            }
+        }
+
+        /**
+         * Functions for control buttons.
+         */
+        function nextCard() {
+            // Increment index; the loop jump logic handles wrapping the view
+            const nextIndex = activeCardIndex + 1; 
+            updateActiveCard(nextIndex);
+        }
+
+        function prevCard() {
+            // Decrement index; the loop jump logic handles wrapping the view
+            const prevIndex = activeCardIndex - 1;
+            updateActiveCard(prevIndex);
+        }
+        
+        /**
+         * Main initialization function.
+         */
+        function init() {
+            const container = document.getElementById('card-row');
+
+            // 1. Initial Scroll (must wait briefly for card DOM elements to render)
+            setTimeout(() => {
+                const middleStartElement = document.getElementById(cardConfigs[CARD_LENGTH].id).closest('.card-item');
+                if (middleStartElement) {
+                    const cardWidth = middleStartElement.offsetWidth;
+                    const containerWidth = container.offsetWidth;
+                    const initialScrollPosition = middleStartElement.offsetLeft - (containerWidth / 2) + (cardWidth / 2);
+                    
+                    // Instantaneous initial scroll to the center section
+                    container.scrollLeft = initialScrollPosition;
+                    
+                    // Now activate the card in the middle section (index CARD_LENGTH)
+                    updateActiveCard(CARD_LENGTH); 
+                }
+            }, 50); 
+            
+            // 2. Assign click AND hover handlers to all 15 cards
+            cardConfigs.forEach((config, index) => {
+                const cardElement = document.getElementById(config.id).closest('.card-item');
+                if (cardElement) {
+                    // Click handler (for primary selection / touch devices)
+                    cardElement.onclick = () => updateActiveCard(index);
+
+                    // Hover handler (for mouse users)
+                    cardElement.onmouseenter = () => {
+                        // Prevent updating if scrolling is in progress to avoid flicker
+                        if (activeCardIndex !== index && !isScrolling) {
+                            updateActiveCard(index);
+                        }
+                    };
+                }
+            });
+            
+            // 3. Attach button listeners
+            document.getElementById('prev-button').onclick = prevCard;
+            document.getElementById('next-button').onclick = nextCard;
+        }
+
+        window.onload = init;
+    </script>
+</head>
+<body class="bg-gray-900 p-8">
+    <div class="max-w-7xl mx-auto flex flex-col items-center">
+        <h1 class="text-4xl font-extrabold text-white text-center mb-4">
+            Dynamic Flow Card Selector - Looping
+        </h1>
+        <p class="text-gray-400 mb-8 text-center">
+            The cards now scroll in an **infinite loop** when navigating! Hover or click a card to activate its flow.
+        </p>
+
+        <!-- Navigation Controls -->
+        <div class="flex space-x-4 mb-8">
+            <button id="prev-button" class="px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-full shadow-lg transition duration-200">
+                &larr; Previous
+            </button>
+            <button id="next-button" class="px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold rounded-full shadow-lg transition duration-200">
+                Next &rarr;
+            </button>
+        </div>
+
+        <!-- Horizontal Card Container -->
+        <!-- Note: This container now holds 15 card elements -->
+        <div id="card-row" class="flex p-4 space-x-6 max-w-full overflow-x-auto pb-6">
+            
+            <!-- Cards are generated via a script block -->
+            <script>
+                document.write(cardConfigs.map(config => `
+                    <div class="card-item rounded-xl shadow-2xl overflow-hidden min-w-[250px] bg-gray-700">
+                        <div class="p-4 text-white font-bold text-center ${config.color} border-b-2 border-gray-900">
+                            ${config.title}
+                        </div>
+                        <!-- Animation Container -->
+                        <div id="${config.id}" class="card-container bg-gray-800">
+                            <!-- Floating elements will be inserted here -->
+                        </div>
+                    </div>
+                `).join(''));
+            </script>
+            
+        </div>
+    </div>
+</body>
+</html>

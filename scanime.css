@@ -1,0 +1,519 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+    min-height: 100vh;
+    color: #dfe1e5;
+    overflow-x: hidden;
+    background: linear-gradient(135deg, #091c43, #010b0f);
+}
+
+.splash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, #2d1b35 0%, #200104 100%);
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.stars-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.star {
+    position: absolute;
+    background-color: #d5d9df;
+    border-radius: 50%;
+    animation: twinkle 2s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+.splash-screen {
+    position: relative;
+}
+
+.splash-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+    transform: scale(0) translateY(-50%) translateX(-50%);
+    width: 400px;
+    height: 400px;
+}
+
+.loading-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0;
+    margin-top: 250px;
+}
+
+header {
+    background: linear-gradient(135deg, #020a0e);
+    padding: 0.1rem;
+    height: 7rem;
+    width: 100%;
+}
+
+.header {
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
+}
+
+.header-Btn {
+    position: relative; /* Needed to position the ::before element */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    height: 3rem;
+    width: 6rem;
+    border-radius: 0.5rem;
+    color: #b9b1b1; /* Assuming you have text inside */
+    z-index: 1; /* Ensures content is above the pseudo-element */
+    overflow: hidden; /* Clips the ::before element as it grows */
+    transition: transform 0.4s ease-in-out, color 0.4s ease-in-out; /* Animate scale and color */
+}
+
+/* Create the pseudo-element that will be our sliding background */
+.header-Btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0; /* Initially, it has no width */
+    height: 100%;
+    /* Your desired gradient goes here */
+    background: linear-gradient(120deg, rgba(222, 9, 172, 1), rgba(3, 63, 105, 1));
+    z-index: -1; /* Place it behind the button's text/content */
+    transition: width 0.4s ease-in-out; /* THIS is the key animation */
+}
+
+.header-Btn:hover {
+    transform: scale(1.1);
+    color: white; /* Change text color to be visible on the gradient */
+    /* Add a corrected box-shadow if you like */
+    box-shadow: 0 0 15px rgba(222, 9, 172, 0.5);
+}
+
+.header-Btn:hover::before {
+    width: 100%; /* The transition on 'width' makes this happen smoothly */
+}
+
+h2 {
+    padding: 0.5rem;
+}
+
+.main-content {
+    display: none;
+    padding: none;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.search-form {
+    display: flex;
+    width: 100%;
+    max-width: 800px;
+    border: 1px solid #dfe1e5;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px 1px rgba(64,60,67,.16);
+}
+
+.search-form:hover,
+.search-form:focus-within {
+    box-shadow: 0 2px 8px 1px rgba(232, 132, 213, 0.732);
+    border-color: rgba(223,225,229,0);
+}
+
+.search-input {
+    flex-grow: 1;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    outline: none;
+    background: linear-gradient(135deg, #3387ed, #091c43);
+    color: #dfe1e5;
+    border-radius: 24px 0 0 24px; /* Adjust border-radius for input */
+}
+
+.search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none; /* Remove border */
+    background-color: transparent;
+    padding: 0 15px;
+    cursor: pointer;
+    border-radius: 0 24px 24px 0; /* Adjust border-radius for button */
+}
+
+.search-icon {
+    stroke: #3387ed;
+    width: 20px;
+    height: 20px;
+}
+
+.clear-button {
+    position: fixed; /* Position relative to the viewport */
+    right: 20px; /* 20px from the right edge of the screen */
+    top: 150px; /* Roughly aligned with the search bar vertically */
+    border: none;
+    background-color: transparent;
+    padding: 10px; /* Make it easier to click */
+    cursor: pointer;
+    display: none; /* Make sure this is the default state */
+    z-index: 1000; /* Ensure it's above other content */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle background */
+    border-radius: 50%; /* Make it round */
+    transition: background-color 0.3s ease;
+}
+
+.clear-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.clear-icon {
+    stroke: black; /* User requested black color */
+    width: 30px; /* Make it a bit larger for better visibility */
+    height: 30px;
+    transition: stroke 0.3s ease;
+}
+
+.clear-button:hover .clear-icon {
+    stroke: #ff0000; /* Red on hover for a clear button */
+}
+
+.falcon {
+    height: 7rem;
+    width: 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    transition: 0.4s ease-in-out;
+}
+
+.main-image {
+    margin-top: -0.5rem;
+    height: 7.5rem;
+    width: 7.5rem;
+    padding: 0;
+    transition: filter 0.4s ease-in-out, transform 0.6s ease-in-out;
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0.5));
+}
+
+.brand-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 5.4rem;
+    width: 24rem;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 7rem;
+    width: 25rem;
+    margin-right: 3rem;
+}
+
+.main-image:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(15px 15px 15px rgba(211, 5, 129, 0.721));
+}
+
+.carousel-container {
+  width: 100%;
+  height: 20rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 20px 0;
+  position: relative;
+}
+
+.carousel-container::before,
+.carousel-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100px;
+    z-index: 2;
+}
+
+.carousel {
+  display: flex;
+  width: fit-content;
+  animation: scroll 25s linear infinite;
+}
+
+.carousel:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.card {
+  flex: none;
+  height: 18rem;
+  width: 13rem;
+  margin: 0 10px;
+  background-color: transparent;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.1);
+    z-index: 3;
+    box-shadow: 0 0 20px rgba(230, 46, 175, 0.79), 0 0 20px rgba(235, 158, 41, 0.8);
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Specific rule for genre card images to prevent cropping */
+.genre-card img {
+    object-fit: contain; /* Ensures the entire image is visible */
+    padding: 1rem; /* Adds some space around the image */
+    height: 90%; /* Adjust height to make space for the text below */
+}
+
+.card p {
+  margin: 10px 0;
+  font-weight: bold;
+  color: #333;
+  opacity: 0;
+}
+
+.card p:hover {
+    opacity: 1;
+    z-index: 4;
+}
+
+.carousel-container:hover .card:not(:hover) {
+    filter: blur(4px);
+    transform: scale(0.9);
+    opacity: 0.5;
+    transition: filter 0.3s, transform 0.3s, opacity 0.3s;
+}
+
+/* This was corrected from .card-container to .carousel-container */
+.carousel-container:hover .card:hover {
+    filter: blur(0);
+    transform: scale(1.1);
+    opacity: 1;
+    z-index: 3;
+}
+
+#results {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 20px auto;
+}
+
+.anime-result-item {
+    background-color: #f208d331;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    padding: 10px;
+    width: 18rem;
+    height: 25rem;
+    text-align: center;
+    color: #fff;
+    transition: transform 0.3s ease;
+}
+
+.anime-result-item:hover {
+    transform: scale(1.1);
+    z-index: 3;
+    box-shadow: 0 0 20px rgba(230, 46, 175, 0.79), 0 0 20px rgba(235, 158, 41, 0.8);
+}
+
+.anime-result-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.anime-result-item h3 {
+    font-size: 1rem;
+    margin: 10px 0;
+    height: 40px; /* Ensures consistent height */
+}
+
+.anime-result-item p {
+    font-size: 0.8rem;
+    height: 50px;
+    overflow: hidden;
+}
+
+/* Styling for the new unordered list inside the card */
+.card-content .p1 {
+   /* Removes the default bullet points */
+    padding: 0; /* Removes the default left padding */
+    text-align: left; /* Aligns text to the left for readability */
+}
+
+.reveal {
+    position: relative;
+    /* Initial state for elements that haven't been revealed yet */
+    transform: translateY(50px);
+    opacity: 0; /* Initially invisible */
+    /* Remove the CSS transition here, Anime.js will handle it */
+    /* transition: all 1s ease-in-out; */
+}
+
+.aotd-section {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.aotd-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4rem;
+    perspective: 1000px; /* Creates the 3D space for the cards */
+}
+
+.aotd-item {
+    background-color: #f208d331;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    padding: 10px;
+    width: 18rem;
+    height: 25rem;
+    text-align: center;
+    color: #fff;
+    transition: transform 0.4s ease; /* Smooth transition for the 3D effect */
+    transform-style: preserve-3d; /* Allows the card to be manipulated in 3D space */
+    position: relative; /* Required for the pseudo-element */
+    overflow: hidden; /* Clips the rotating pseudo-element */
+    z-index: 2; /* Ensure it's above the background but below pop-out elements */
+}
+
+/* The rotating, glowing border effect */
+.aotd-item::before {
+    content: '';
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    top: -25%;
+    left: -25%;
+    z-index: -1;
+    /* A conic gradient creates a "slice" of color that we can rotate */
+    background: conic-gradient(
+        from var(--aotd-rotate, 0deg),
+        transparent 40%,
+        #e62eaf, /* Pink color from your site */
+        #eb9e29, /* Orange color from your site */
+        transparent 60%
+    );
+    transform: rotate(var(--aotd-rotate, 0deg)); /* We will animate this with anime.js */
+}
+
+/* Keyframe animation for the spinning top effect */
+@keyframes spinning-top {
+    /* Step 1: Shrink down first */
+    0% {
+        transform: scale(1) translateZ(0) rotateY(0deg);
+    }
+    30% {
+        transform: scale(0.8) translateZ(20px) rotateY(180deg);
+    }
+    /* Step 2: Grow larger than original while completing the spin */
+    100% {
+        transform: scale(1.2) translateZ(60px) rotateY(360deg);
+    }
+}
+
+/* New keyframe animation for the reverse effect */
+@keyframes spinning-top-reverse {
+    /* Start from the enlarged state */
+    0% {
+        transform: scale(1.2) translateZ(60px) rotateY(360deg);
+    }
+    /* Go through the shrink state */
+    70% {
+        transform: scale(0.8) translateZ(20px) rotateY(180deg);
+    }
+    /* End at the original state */
+    100% {
+        transform: scale(1) translateZ(0) rotateY(0deg);
+    }
+}
+
+/* We now use a class to trigger the animations */
+.aotd-item.is-hovered {
+    z-index: 10; /* Bring the card to the front */
+    animation: spinning-top 1.5s ease-out forwards;
+}
+
+.aotd-item.is-leaving {
+    animation: spinning-top-reverse 1.5s ease-out forwards;
+}
+
+.aotd-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.aotd-item h3 {
+    font-size: 1rem;
+    margin: 10px 0;
+    height: 40px; /* Ensures consistent height */
+    overflow: hidden;
+}
