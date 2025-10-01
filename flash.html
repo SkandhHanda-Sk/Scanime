@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Trail Mouse Pointer</title>
+    <style>
+        body {
+            /* Full viewport dark background for contrast */
+            background-color: #110022;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            cursor: none; /* Hide the default mouse cursor */
+            font-family: 'Inter', sans-serif;
+        }
+
+        #star-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Crucial: allows clicks through to the elements below */
+            z-index: 9999;
+        }
+
+        .star {
+            position: absolute;
+            width: 6px; /* Smaller size for a smoother ribbon */
+            height: 6px;
+            border-radius: 50%; /* Circular dots for a smooth trail */
+            /* Color and shadow will be set dynamically by JavaScript */
+            box-shadow: 0 0 5px currentColor, 0 0 10px currentColor; 
+            transform: scale(0); /* Start scaled down */
+            opacity: 0;
+        }
+    </style>
+
+    <!-- 1. Include the Anime.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+</head>
+<body>
+
+    <div id="star-container">
+        <!-- Stars will be injected here -->
+    </div>
+
+    <script>
+        const starContainer = document.getElementById('star-container');
+        
+        // Define the dual colors for the ribbon effect
+        const colors = [
+            '#FF69B4', // Hot Pink
+            '#4169E1'  // Royal Blue
+        ];
+
+        /**
+         * Creates a single star element at the given coordinates.
+         * @param {number} x - The x coordinate.
+         * @param {number} y - The y coordinate.
+         * @returns {HTMLElement} The created star element.
+         */
+        function createStar(x, y) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            
+            // Assign random color dynamically
+            const color = colors[anime.random(0, colors.length - 1)];
+            star.style.backgroundColor = color;
+            star.style.color = color; // Used for the box-shadow's currentColor
+            
+            // Position the star so its center is under the cursor
+            star.style.left = `${x - 3}px`; // Adjusted for 6px width
+            star.style.top = `${y - 3}px`; // Adjusted for 6px height
+            
+            starContainer.appendChild(star);
+            return star;
+        }
+
+        /**
+         * Animates a star to appear, move slightly, and disappear.
+         * @param {HTMLElement} star - The star element to animate.
+         */
+        function animateStar(star) {
+            // Longer duration for a longer, smoother tail effect
+            const duration = anime.random(1000, 2000); 
+            
+            // Very slight random displacement for a subtle drift
+            const translateX = anime.random(-5, 5);
+            const translateY = anime.random(-5, 5);
+
+            anime({
+                targets: star,
+                // Appearance and movement
+                translateX: translateX,
+                translateY: translateY,
+                scale: [
+                    { value: 1, duration: 100, easing: 'easeOutQuad' }, // Quick pop to full size
+                    { value: 0, delay: duration * 0.5, duration: duration * 0.5 } // Slow shrink over the second half
+                ],
+                opacity: [
+                    { value: 0.8, duration: 100 }, // Quick fade in
+                    { value: 0, delay: duration * 0.5, duration: duration * 0.5 } // Slow fade out
+                ],
+                duration: duration,
+                easing: 'linear',
+                // Cleanup
+                complete: function(anim) {
+                    star.remove(); 
+                }
+            });
+        }
+
+        // --- Mouse Event Listener ---
+
+        let lastEventTime = 0;
+        const minimumInterval = 10; // Significantly lower interval for high particle density (ribbon effect)
+
+        document.addEventListener('mousemove', (event) => {
+            const currentTime = Date.now();
+            
+            // Only create a star if enough time has passed since the last one
+            if (currentTime - lastEventTime > minimumInterval) {
+                const star = createStar(event.clientX, event.clientY);
+                animateStar(star);
+                lastEventTime = currentTime;
+            }
+        });
+
+        // Utility to retry fetch operations with exponential backoff.
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response;
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        console.error('Max retries reached. Failed to fetch:', error);
+                        throw error;
+                    }
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

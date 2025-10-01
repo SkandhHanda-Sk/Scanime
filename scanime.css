@@ -4,6 +4,9 @@ body {
     min-height: 100vh;
     color: #dfe1e5;
     overflow-x: hidden;
+    /* Default cursor, will be hidden by .star-trail-active */
+    /* Ensure font-family is consistent */
+    font-family: sans-serif; 
     background: linear-gradient(135deg, #091c43, #010b0f);
 }
 
@@ -21,22 +24,14 @@ body {
     overflow: hidden;
 }
 
+body.star-trail-active {
+    cursor: none; /* Hide the default mouse cursor when star trail is active */
+}
+
 .stars-container {
     position: absolute;
     width: 100%;
     height: 100%;
-}
-
-.star {
-    position: absolute;
-    background-color: #d5d9df;
-    border-radius: 50%;
-    animation: twinkle 2s infinite ease-in-out;
-}
-
-@keyframes twinkle {
-    0%, 100% { opacity: 0; }
-    50% { opacity: 1; }
 }
 
 .splash-screen {
@@ -64,11 +59,17 @@ body {
 }
 
 header {
+    position: sticky; /* Makes the header stick to the top */
+    top: 0; /* Positions it at the very top of the viewport */
+    z-index: 1001; /* Ensures it stays above other content like the clear button */
+    opacity: 0; /* Start hidden */
+    transition: opacity 1s ease-in-out; /* Add fade transition */
     background: linear-gradient(135deg, #020a0e);
     padding: 0.1rem;
     height: 7rem;
     width: 100%;
 }
+
 
 .header {
     display: flex;
@@ -121,9 +122,13 @@ h2 {
 }
 
 .main-content {
-    display: none;
-    padding: none;
+    opacity: 0; /* Start hidden */
     transition: opacity 0.5s ease-in-out;
+}
+
+/* Ensure that only sections meant for scroll reveal start as invisible */
+.main-content > .reveal {
+    opacity: 0;
 }
 
 .search-container {
@@ -241,6 +246,26 @@ h2 {
     height: 7rem;
     width: 25rem;
     margin-right: 3rem;
+    position: relative; /* Required to position the shine pseudo-element */
+    overflow: hidden;   /* Ensures the shine stays within the logo's bounds */
+}
+
+/* The shine pseudo-element */
+.brand::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%; /* Start completely off-screen to the left */
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-25deg); /* Angle the shine */
+    transition: left 1.75s ease-in-out;
+}
+
+/* On hover, slide the shine across the element */
+.brand:hover::after {
+    left: 150%; /* Move it completely off-screen to the right */
 }
 
 .main-image:hover {
@@ -275,6 +300,11 @@ h2 {
 }
 
 .carousel:hover {
+    animation-play-state: paused;
+}
+
+/* Utility class to pause the carousel animation via JavaScript */
+.carousel.is-paused {
     animation-play-state: paused;
 }
 
@@ -516,4 +546,83 @@ h2 {
     margin: 10px 0;
     height: 40px; /* Ensures consistent height */
     overflow: hidden;
+}
+
+footer {
+    background-color: #020a0e; /* A dark color matching your theme */
+    color: #888; /* A softer color for the text */
+    text-align: center;
+    padding: 25px 20px;
+    margin-top: 50px; /* Adds space between the main content and the footer */
+    border-top: 1px solid #2a2a2a; /* A subtle line to separate the footer */
+    width: 100%;
+}
+
+.footer-content p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+/* --- Fixed Star Trail Toggle Button --- */
+.star-trail-toggle-fixed {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001; /* Above most content, but can be below modals if needed */
+    padding: 10px 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #dfe1e5;
+    background-color: rgba(2, 10, 14, 0.8); /* Semi-transparent dark background */
+    border: 1px solid #4169E1; /* Blue border to match one of the trail colors */
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, opacity 0.5s ease-in-out;
+    box-shadow: 0 0 10px rgba(65, 105, 225, 0.5);
+    opacity: 0; /* Initially hidden */
+    pointer-events: none; /* Not interactive while hidden */
+}
+
+.star-trail-toggle-fixed:hover {
+    background-color: rgba(65, 105, 225, 0.9); /* Royal Blue on hover */
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.7); /* Hot Pink glow on hover */
+    transform: scale(1.05);
+}
+
+/* --- Cursor Follower Dot --- */
+#cursor-dot {
+    display: none; /* Hidden by default */
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    transform: translate(-50%, -50%); /* Center on cursor */
+    pointer-events: none; /* Allow clicks to pass through */
+    z-index: 10000; /* Highest z-index to be on top of everything */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+/* --- Star Trail Specific Styles --- */
+#star-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Crucial: allows clicks to pass through to elements below */
+    z-index: 9999; /* Below the cursor dot, but above other content */
+}
+
+.star {
+    position: absolute;
+    width: 6px; /* Smaller size for a smoother ribbon */
+    height: 6px;
+    border-radius: 50%; /* Circular dots for a smooth trail */
+    /* Color and shadow will be set dynamically by JavaScript */
+    box-shadow: 0 0 5px currentColor, 0 0 10px currentColor; 
+    transform: scale(0); /* Start scaled down */
+    opacity: 0;
 }

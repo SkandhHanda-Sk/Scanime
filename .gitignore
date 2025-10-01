@@ -1,0 +1,4 @@
+# Ignore specific files
+flash.html
+
+# You can also ignore file types, like .log or .tmp files

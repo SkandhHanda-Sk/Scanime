@@ -218,6 +218,22 @@ function globalRenderLoop() {
     requestAnimationFrame(globalRenderLoop);
 }
 
+// --- Global Controller Object ---
+// This object will be exposed on the window to be controlled by scanime.js
+window.particleEffectsController = {
+    pauseAll: () => {
+        globalAnimationRunning = false;
+        cardInstances.forEach(instance => instance.stopIdleAnimation());
+    },
+    resumeAll: () => {
+        if (!globalAnimationRunning) {
+            globalAnimationRunning = true;
+            globalRenderLoop();
+            cardInstances.forEach(instance => instance.startIdleAnimation());
+        }
+    }
+};
+
 // Start everything when the DOM is ready
 // We will now call this from scanime.js after the splash screen is gone
 // to ensure the elements are visible and have dimensions.

@@ -6,73 +6,76 @@ document.addEventListener('DOMContentLoaded', () => {
     const splash = document.querySelector('.splash');
     const starsContainer = document.querySelector('.stars-container');
 
-    // -- Group 1: Slow-moving stars --
-    // We will create the first batch of 150 stars that will move slowly.
-    const numberOfSlowStars = 150;
-    for (let i = 0; i < numberOfSlowStars; i++) {
-        let star = document.createElement('div');
-        // We give these stars a unique class 'star-slow' so we can animate them separately.
-        star.classList.add('star', 'star-slow');
-        let size = Math.random() * 3;
-        star.style.width = `${size}px`;
-        star.style.height = `${size}px`;
-        star.style.top = `${Math.random() * 100}%`;
-        star.style.left = `${Math.random() * 100}%`;
-        star.style.animationDelay = `${Math.random() * 2}s`;
-        starsContainer.appendChild(star);
+    // --- Canvas Starfield ---
+    // This is much more performant than animating 300 individual DOM elements.
+    const canvas = document.createElement('canvas');
+    starsContainer.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+
+    let stars = [];
+    const numStars = 300;
+    let starfieldAnimationId = null; // To hold the animation frame ID
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stars = []; // Reset stars on resize
+        for (let i = 0; i < numStars; i++) {
+            // First half of stars are slow
+            if (i < numStars / 2) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 1 + 1, // Slightly larger
+                    vx: (Math.random() - 0.5) * 0.3, // Slower velocity
+                    vy: (Math.random() - 0.5) * 0.3,
+                    opacity: Math.random() * 0.5 + 0.3
+                });
+            } else { // Second half are fast
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 0.8 + 0.2, // Slightly smaller
+                    vx: (Math.random() - 0.5) * 0.8, // Faster velocity
+                    vy: (Math.random() - 0.5) * 0.8,
+                    opacity: Math.random() * 0.6 + 0.4
+                });
+            }
+        }
     }
 
-    // Animation for the SLOW stars using anime.js.
-    // It targets only the elements with the '.star-slow' class.
-    anime({
-        targets: '.star-slow',
-        // The translateX and translateY values are smaller, resulting in slower, shorter drifts.
-        translateX: () => anime.random(-50, 50),
-        translateY: () => anime.random(-50, 50),
-        scale: [
-            { value: 1, duration: 0 },
-            { value: 1.2, duration: 1000 },
-            { value: 1, duration: 1000 }
-        ],
-        loop: true,
-        easing: 'linear',
-        duration: 2000,
-        delay: anime.stagger(10000)
-    });
+    function animateStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#d5d9df';
 
-    // -- Group 2: Fast-moving stars --
-    // Now, we create the second batch of 150 stars that will move more quickly.
-    const numberOfFastStars = 150;
-    for (let i = 0; i < numberOfFastStars; i++) {
-        let star = document.createElement('div');
-        // We give these stars a unique class 'star-fast' to target them for the faster animation.
-        star.classList.add('star', 'star-fast');
-        let size = Math.random() * 1;
-        star.style.width = `${size}px`;
-        star.style.height = `${size}px`;
-        star.style.top = `${Math.random() * 100}%`;
-        star.style.left = `${Math.random() * 100}%`;
-        star.style.animationDelay = `${Math.random() * 2}s`;
-        starsContainer.appendChild(star);
+        stars.forEach(star => {
+            // Twinkle effect by changing opacity
+            star.opacity += (Math.random() - 0.5) * 0.1;
+            if (star.opacity > 1) star.opacity = 1;
+            if (star.opacity < 0) star.opacity = 0;
+
+            ctx.globalAlpha = star.opacity;
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Move star
+            star.x += star.vx;
+            star.y += star.vy;
+
+            // Boundary check to wrap stars around
+            if (star.x < 0) star.x = canvas.width;
+            if (star.x > canvas.width) star.x = 0;
+            if (star.y < 0) star.y = canvas.height;
+            if (star.y > canvas.height) star.y = 0;
+        });
+
+        starfieldAnimationId = requestAnimationFrame(animateStars);
     }
 
-    // Animation for the FAST stars using anime.js.
-    // This animation specifically targets the '.star-fast' class.
-    anime({
-        targets: '.star-fast',
-        // The translateX and translateY values are larger, resulting in faster, longer drifts across the screen.
-        translateX: () => anime.random(-150, 150),
-        translateY: () => anime.random(-150, 150),
-        scale: [
-            { value: 1, duration: 0 },
-            { value: 1.2, duration: 1000 },
-            { value: 1, duration: 1000 }
-        ],
-        loop: true,
-        easing: 'linear',
-        duration: 2000,
-        delay: anime.stagger(5)
-    });
+    resizeCanvas();
+    animateStars();
+    window.addEventListener('resize', resizeCanvas);
 
     // This creates an animation "timeline" for the splash screen logo.
     const logoAnimation = anime.timeline({
@@ -119,14 +122,27 @@ document.addEventListener('DOMContentLoaded', () => {
             easing: 'easeInOutExpo',
             complete: () => {
                 splash.style.display = 'none';
-                document.querySelector('.main-content').style.display = 'block';
-                // Now that the content is visible, initialize the particle effects
-                if (typeof window.startParticleEffects === 'function') {
-                    window.startParticleEffects();
-                }
+                // Stop the starfield animation completely
+                if (starfieldAnimationId) cancelAnimationFrame(starfieldAnimationId);
             }
         });
     }, 5000);
+
+    // --- Pre-load content and initialize animations behind the splash screen ---
+    const mainContent = document.querySelector('.main-content');
+    const header = document.querySelector('header');
+
+    // Fade in header, main content, and star trail button after the splash screen is gone
+    setTimeout(() => {
+        anime({
+            targets: [header, mainContent, '#starTrailToggleBtn'],
+            opacity: 1,
+            duration: 800,
+            easing: 'easeOutQuad',
+            delay: anime.stagger(100), // Stagger the fade-in slightly
+            begin: () => document.getElementById('starTrailToggleBtn').style.pointerEvents = 'auto'
+        });
+    }, 5000); // Match the splash screen timeout
 
     // --- Carousel ---
     const carousel = document.getElementById('carousel');
@@ -138,6 +154,40 @@ document.addEventListener('DOMContentLoaded', () => {
             carousel.appendChild(clone);
         });
     }
+
+    // --- Header Navigation ---
+    /**
+     * Attaches a smooth scroll event listener to a header button.
+     * @param {string} buttonClass - The class of the button to select.
+     * @param {string} sectionId - The ID of the section to scroll to.
+     */
+    function setupSmoothScroll(buttonClass, sectionId) {
+        const button = document.querySelector(buttonClass);
+        const section = document.getElementById(sectionId);
+
+        if (button && section) {
+            button.addEventListener('click', () => {
+                // Calculate position, accounting for the sticky header's height
+                const headerOffset = document.querySelector('header').offsetHeight;
+                const elementPosition = section.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            });
+        }
+    }
+
+    setupSmoothScroll('.home.header-Btn', 'home-section');
+    setupSmoothScroll('.trending.header-Btn', 'trending-section');
+    setupSmoothScroll('.about.header-Btn', 'about-section');
+
+    // --- Star Trail Effect ---
+    const starTrailToggleBtn = document.getElementById('starTrailToggleBtn');
+    const starContainer = document.getElementById('star-container');
+    const cursorDot = document.getElementById('cursor-dot');
 
     const searchForm = document.querySelector('.search-form');
     const searchInput = document.getElementById('searchInput');
@@ -221,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * Uses localStorage to ensure the anime selection only changes once per day.
      */
     function loadAnimeOfTheDay() {
+        const aotdContainer = document.getElementById('anime-of-the-day-container');
         const today = new Date().toISOString().split('T')[0]; // Get date as 'YYYY-MM-DD'
         const storedDate = localStorage.getItem('aotd_date');
         const storedData = localStorage.getItem('aotd_data');
@@ -269,8 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .catch(error => {
                     console.error('Error fetching Anime of the Day:', error);
-                    const container = document.getElementById('anime-of-the-day-container');
-                    container.innerHTML = '<p class="error-text">Could not load Anime of the Day. Please try again later.</p>';
+                    aotdContainer.innerHTML = '<p class="error-text">Could not load Anime of the Day. Please try again later.</p>';
                 });
         }
     }
@@ -280,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {Array} animeList - An array of 3 anime objects.
      */
     function displayAnimeOfTheDay(animeList) {
+        let aotdBorderAnimation; // To hold the animation instance
         const container = document.getElementById('anime-of-the-day-container');
         container.innerHTML = ''; // Clear previous content
 
@@ -311,14 +362,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Add the rotating border animation to the newly created cards
-        anime({
+        aotdBorderAnimation = anime({
             targets: '.aotd-item',
             '--aotd-rotate': '360deg', // Animate the custom property from 0 to 360
             loop: true,
             duration: 4000,
             easing: 'linear',
-            autoplay: true
+            autoplay: false // We will control this with the Intersection Observer
         });
+
+        container.aotdAnimation = aotdBorderAnimation; // Attach animation to the element for the observer
     }
 
     // Function to handle scroll reveal animation
@@ -343,20 +396,236 @@ document.addEventListener('DOMContentLoaded', () => {
                     easing: 'easeOutQuad'
                 });
                 element.classList.add("revealed"); // Mark as revealed
-            } else if (revealBottom < revealPoint && element.classList.contains('revealed')) {
-                anime.remove(element);
-                element.classList.remove("revealed"); //re-add the reveal class
-                element.classList.add("reveal");
             }
         }
     }
     // Event listener for scroll
 
-    window.addEventListener("scroll", reveal);
-
-    // Initial call to reveal to check elements that are already in view on page load
-    reveal();
+    window.addEventListener("scroll", reveal, { passive: true });
 
     // Load the Anime of the Day on page load
     loadAnimeOfTheDay();
+
+    // --- Animation Performance Observer ---
+    const animationObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const targetId = entry.target.id;
+
+            if (targetId === 'trending-section') {
+                const carousel = document.getElementById('carousel');
+                if (entry.isIntersecting) {
+                    carousel.classList.remove('is-paused');
+                } else {
+                    carousel.classList.add('is-paused');
+                }
+            }
+
+            if (targetId === 'home-section') {
+                const aotdContainer = document.getElementById('anime-of-the-day-container');
+                if (aotdContainer.aotdAnimation) {
+                    if (entry.isIntersecting) {
+                        aotdContainer.aotdAnimation.play();
+                    } else {
+                        aotdContainer.aotdAnimation.pause();
+                    }
+                }
+            }
+
+            if (targetId === 'about-section') {
+                if (typeof window.particleEffectsController === 'object') {
+                    if (entry.isIntersecting) {
+                        window.particleEffectsController.resumeAll();
+                    } else {
+                        window.particleEffectsController.pauseAll();
+                    }
+                }
+            }
+        });
+    }, { threshold: 0.1 }); // Trigger when 10% of the element is visible
+
+    ['trending-section', 'home-section', 'about-section'].forEach(id => animationObserver.observe(document.getElementById(id)));
+
+    // Initialize the particle effects for the 'About' section.
+    // The IntersectionObserver will handle starting/pausing them.
+    if (typeof window.startParticleEffects === 'function') {
+        window.startParticleEffects();
+    }
+    // --- Star Trail Mouse Pointer Functionality ---
+    let currentStarTrailMode = 'off'; // 'off', 'pinkBlue', 'yellowBeam'
+    let starTrailMouseMoveHandler = null; // To store the event listener function
+
+    // --- Time-based variables for a gapped trail ---
+    let lastEventTime = 0;
+    const gappedTrailInterval = 25; // Interval in ms for the gapped trail. Higher = more gaps.
+
+    // --- Interpolation variables for a gapless trail ---
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    const starDensity = 3; // Create a star every 3 pixels of movement for high density.
+
+    // Define different color schemes for the star trail
+    const COLOR_SCHEMES = {
+        pinkBlue: ['#FF69B4', '#4169E1'], // Hot Pink, Royal Blue
+        yellowBeam: ['#FFFF00', '#FFD700', '#FFA500'] // Yellow, Gold, Orange for a warm beam
+    };
+    let activeColors = []; // Will hold the colors for the currently active mode
+
+    // Define the order of modes for the button to cycle through
+    const STAR_TRAIL_MODES_CYCLE = ['off', 'pinkBlue', 'yellowBeam'];
+
+    /**
+     * Creates a single star element at the given coordinates.
+     * @param {number} x - The x coordinate.
+     * @param {number} y - The y coordinate.
+     * @returns {HTMLElement} The created star element.
+     */
+    function createStar(x, y) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        
+        // Assign random color dynamically from the activeColors
+        const color = activeColors[anime.random(0, activeColors.length - 1)];
+        star.style.backgroundColor = color;
+        star.style.color = color; // Used for the box-shadow's currentColor
+        
+        // Position the star so its center is under the cursor
+        star.style.left = `${x - 3}px`; // Adjusted for 6px width
+        star.style.top = `${y - 3}px`; // Adjusted for 6px height
+        
+        starContainer.appendChild(star);
+        return star;
+    }
+
+    /**
+     * Animates a star to appear, move slightly, and disappear.
+     * @param {HTMLElement} star - The star element to animate.
+     */
+    function animateStar(star) {
+        // Longer duration for a longer, smoother tail effect
+        const duration = anime.random(1000, 2000); 
+        
+        anime({
+            targets: star,
+            // Appearance and movement
+            // We remove translateX and translateY to keep the trail perfectly smooth
+            scale: [
+                { value: 1, duration: 100, easing: 'easeOutQuad' }, // Quick pop to full size
+                { value: 0, delay: duration * 0.5, duration: duration * 0.5 } // Slow shrink over the second half
+            ],
+            opacity: [
+                { value: 0.8, duration: 100 }, // Quick fade in
+                { value: 0, delay: duration * 0.5, duration: duration * 0.5 } // Slow fade out
+            ],
+            duration: duration,
+            easing: 'linear',
+            // Cleanup
+            complete: function(anim) {
+                star.remove(); 
+            }
+        });
+    }
+
+    // Helper function to clean up any active star trail effect
+    function _cleanupStarTrail() {
+        if (starTrailMouseMoveHandler) {
+            document.removeEventListener('mousemove', starTrailMouseMoveHandler);
+            starTrailMouseMoveHandler = null;
+        }
+        // Reset interpolation variables
+        lastMouseX = 0;
+        lastMouseY = 0;
+        // Reset time-based variables
+        lastEventTime = 0;
+
+        document.body.classList.remove('star-trail-active'); // Show default cursor
+        cursorDot.style.display = 'none'; // Hide the custom cursor dot
+        starContainer.innerHTML = ''; // Clear all existing stars
+    }
+
+    // Helper function to activate a specific star trail mode
+    function _activateStarTrail(mode) {
+        if (mode === 'off') {
+            _cleanupStarTrail(); // Ensure everything is turned off
+            return;
+        }
+
+        // Set the colors based on the chosen mode
+        activeColors = COLOR_SCHEMES[mode];
+        
+        // Choose the correct handler based on the mode
+        if (mode === 'pinkBlue') {
+            // --- GAPPED TRAIL LOGIC (Time-based) ---
+            starTrailMouseMoveHandler = (event) => {
+                cursorDot.style.left = `${event.clientX}px`;
+                cursorDot.style.top = `${event.clientY}px`;
+
+                const currentTime = Date.now();
+                if (currentTime - lastEventTime > gappedTrailInterval) {
+                    animateStar(createStar(event.clientX, event.clientY)); // Call animateStar here
+                    lastEventTime = currentTime;
+                }
+            };
+        } else if (mode === 'yellowBeam') {
+            // --- DENSE TRAIL LOGIC (Interpolation) ---
+            starTrailMouseMoveHandler = (event) => {
+                const currentMouseX = event.clientX;
+                const currentMouseY = event.clientY;
+
+                cursorDot.style.left = `${currentMouseX}px`;
+                cursorDot.style.top = `${currentMouseY}px`;
+
+                if (lastMouseX === 0 && lastMouseY === 0) {
+                    lastMouseX = currentMouseX;
+                    lastMouseY = currentMouseY;
+                    return;
+                }
+
+                const dx = currentMouseX - lastMouseX;
+                const dy = currentMouseY - lastMouseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx);
+
+                if (distance > 0) {
+                    const numStarsToCreate = Math.ceil(distance / starDensity);
+                    for (let i = 1; i <= numStarsToCreate; i++) {
+                        const progress = i / numStarsToCreate;
+                        const x = lastMouseX + Math.cos(angle) * (distance * progress);
+                        const y = lastMouseY + Math.sin(angle) * (distance * progress);
+                    animateStar(createStar(x, y)); // Call animateStar here
+                    }
+                }
+
+                lastMouseX = currentMouseX;
+                lastMouseY = currentMouseY;
+            };
+        }
+
+        document.addEventListener('mousemove', starTrailMouseMoveHandler);
+        document.body.classList.add('star-trail-active'); // Hide default cursor
+        cursorDot.style.display = 'block'; // Show the custom cursor dot
+    }
+
+    starTrailToggleBtn.addEventListener('click', () => {
+        const currentIndex = STAR_TRAIL_MODES_CYCLE.indexOf(currentStarTrailMode);
+        const nextIndex = (currentIndex + 1) % STAR_TRAIL_MODES_CYCLE.length;
+        currentStarTrailMode = STAR_TRAIL_MODES_CYCLE[nextIndex];
+
+        // First, clean up any existing effect.
+        _cleanupStarTrail();
+        // Then, activate the new one (if it's not 'off').
+        _activateStarTrail(currentStarTrailMode);
+
+        // Update button text based on the new mode
+        switch (currentStarTrailMode) {
+            case 'off':
+                starTrailToggleBtn.textContent = 'Star Trail (Off)';
+                break;
+            case 'pinkBlue':
+                starTrailToggleBtn.textContent = 'Trail: Pink/Blue';
+                break;
+            case 'yellowBeam':
+                starTrailToggleBtn.textContent = 'Trail: Yellow Beam';
+                break;
+        }
+    });
 });
