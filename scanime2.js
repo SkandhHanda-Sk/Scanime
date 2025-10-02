@@ -29,6 +29,7 @@ class ParticleCardEffect {
         this.particles = [];
         this.currentAnimation = null;
         this.idleAnimation = null;
+        this.isContentVisible = false; // State for click toggle
         this.IDLE_DURATION = 3500;
         
         this.PARTICLE_SIZE = 3; 
@@ -98,6 +99,9 @@ class ParticleCardEffect {
     }
 
     showCard = () => {
+        // On mobile, only allow tap to trigger this, not hover.
+        if (window.innerWidth <= 768) return;
+
         this.stopIdleAnimation(); 
         if (this.currentAnimation) this.currentAnimation.pause();
 
@@ -119,6 +123,7 @@ class ParticleCardEffect {
             // Phase 2 starts immediately after merge is complete
             complete: () => {
                 // Fade in the content
+                this.isContentVisible = true;
                 anime({ targets: this.content, opacity: 1, duration: 800 });
 
                 // Animate particles outward to grid (Collapse/Disappear)
@@ -138,9 +143,13 @@ class ParticleCardEffect {
     }
 
     hideCard = () => {
+        // On mobile, only allow tap to trigger this, not hover.
+        if (window.innerWidth <= 768) return;
+
         if (this.currentAnimation) this.currentAnimation.pause();
         
         // Fade out the content
+        this.isContentVisible = false;
         anime({ targets: this.content, opacity: 0, duration: 500, delay: 500 });
 
         // Animate particles outward (Dissolve/Explosion)
@@ -171,9 +180,22 @@ class ParticleCardEffect {
         this.particles.forEach(p => p.draw(this.ctx));
     }
 
+    // --- Click/Tap Handler ---
+    handleTap = () => {
+        // On touch devices, a click might follow a mouseenter. This prevents double-triggering.
+        if (this.currentAnimation && !this.currentAnimation.completed) return;
+
+        if (this.isContentVisible) {
+            this.hideCard();
+        } else {
+            this.showCard();
+        }
+    }
+
     addEventListeners() {
         this.container.addEventListener('mouseenter', this.showCard);
         this.container.addEventListener('mouseleave', this.hideCard);
+        this.container.addEventListener('click', this.handleTap);
         // Bind initCanvas to 'this' instance on resize
         window.addEventListener('resize', this.initCanvas.bind(this));
     }
@@ -185,6 +207,9 @@ const cardInstances = [];
 let globalAnimationRunning = false;
 
 function initializeAllCards() {
+    // On mobile, don't initialize any particle effects. The CSS handles showing the text.
+    if (window.innerWidth <= 768) return;
+
     const wrappers = document.querySelectorAll('.card-wrapper');
     
     // Clear previous instances on resize/re-init

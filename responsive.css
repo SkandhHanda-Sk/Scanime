@@ -6,7 +6,7 @@
 @media (max-width: 900px) {
     .header {
         justify-content: space-between;
-        padding: 0 2rem;
+        padding: 0 1rem; /* Add horizontal padding */
     }
 
     .header-nav {
@@ -55,6 +55,12 @@
 
     .brand {
         margin-right: 0;
+    }
+
+    /* Hide star trail elements on mobile/tablet */
+    .star-trail-toggle-fixed,
+    #cursor-dot {
+        display: none !important;
     }
 }
 
@@ -73,6 +79,31 @@
         max-width: 20rem; /* But don't let them get bigger than their desktop size */
         height: 22rem; /* Adjust height for mobile layout */
     }
+
+    /* --- About Section Cards on Mobile --- */
+    /* On mobile, disable particle effects and just show the content */
+    .card-wrapper {
+        height: auto; /* Let height be determined by content */
+        background: rgba(31, 41, 55, 0.9); /* Use the content background */
+        padding: 1rem;
+        cursor: default; /* Not interactive */
+    }
+
+    .card-wrapper:hover {
+        transform: none; /* Disable hover effect */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Reset to default shadow */
+    }
+
+    .card-wrapper .particle-canvas {
+        display: none; /* Hide the canvas completely */
+    }
+
+    .card-wrapper .card-content {
+        position: static; /* Remove absolute positioning */
+        opacity: 1; /* Make it visible by default */
+        pointer-events: auto;
+        background: none; /* The wrapper now has the background */
+    }
 }
 
 /* ==========================================================================
@@ -85,7 +116,7 @@
 @media (max-width: 900px) {
     .header {
         justify-content: space-between;
-        padding: 0 2rem;
+        padding: 0 1rem; /* Add horizontal padding */
     }
 
     .header-nav {
@@ -135,15 +166,42 @@
     .brand {
         margin-right: 0;
     }
+
+    /* --- Responsive Header Logos --- */
+    .falcon {
+        width: 5rem; /* Adjust falcon container width */
+        height: auto;
+    }
+
+    .main-image {
+        width: 5rem; /* Adjust falcon image size */
+        height: 5rem;
+    }
+
+    .brand {
+        width: auto; /* Let it shrink to fit */
+    }
+    .brand-name {
+        width: 14.5rem; /* Adjust brand name image size */
+    }
 }
 
 /* Extra small devices (phones, 400px and down) */
 @media (max-width: 480px) {
+    /* --- Prevent Horizontal Scrolling on Mobile --- */
+    html, body {
+        overflow-x: hidden;
+    }
+
     /* --- Responsive "My List" Section --- */
     #my-list-container {
         gap: 0.75rem; /* Space between each list item */
-        padding: 0 1rem; /* Padding on the left and right of the container */
+        padding: 0; /* Padding is now on the parent section */
         flex-direction: column; /* Ensure items are stacked vertically */
+    }
+
+    #my-list-section {
+        padding: 0 1rem; /* Add horizontal padding to the section */
     }
 
     #my-list-container .anime-result-item {
@@ -234,5 +292,10 @@
     .genre-card-wrapper .card:hover {
         transform: none;
         box-shadow: none;
+    }
+
+    /* --- Responsive Footer --- */
+    footer {
+        padding: 1.5rem 1rem; /* Adjust padding for mobile */
     }
 }

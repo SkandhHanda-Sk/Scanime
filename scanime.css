@@ -494,10 +494,12 @@ h2 {
 }
 
 /* Specific rule for genre card images to prevent cropping */
-.genre-card img {
+.genre-card-wrapper .genre-card img {
     object-fit: contain; /* Ensures the entire image is visible */
     padding: 1rem; /* Adds some space around the image */
-    height: 90%; /* Adjust height to make space for the text below */
+    height: 100%; /* Fill the container */
+    width: 100%;
+    margin-top: 0; /* Reset any conflicting margins */
 }
 
 .carousel-container:hover .card:not(:hover) {
