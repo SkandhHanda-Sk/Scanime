@@ -77,6 +77,35 @@ header {
     align-items: center;
 }
 
+.header-nav {
+    display: flex;
+    gap: 0.5rem; /* Add some space between nav items */
+}
+
+/* --- Hamburger Menu --- */
+.hamburger-menu {
+    display: none; /* Hidden by default on desktop */
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+}
+
+.hamburger-menu span {
+    width: 2rem;
+    height: 0.25rem;
+    background: #dfe1e5;
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+}
+
 .header-Btn {
     position: relative; /* Needed to position the ::before element */
     display: flex;
@@ -119,6 +148,64 @@ header {
 
 h2 {
     padding: 0.5rem;
+}
+
+/* --- Gradient Heading Effect --- */
+.gradient-heading {
+    font-size: 2.5rem; /* Make the text larger to show off the effect */
+    text-align: center;
+    margin-bottom: 2rem;
+    /* The gradient, starting from blue and moving to pink */
+    background: linear-gradient(90deg, #4169E1, #e62eaf);
+    /* Clip the background to the text shape */
+    -webkit-background-clip: text;
+    background-clip: text;
+    /* Make the text color transparent to reveal the gradient */
+    color: transparent;
+}
+
+/* --- Animated Subtitle for About Section --- */
+.animated-subtitle {
+    font-size: 1.25rem; /* A good size for a subtitle */
+    font-weight: bold;
+    text-align: center;
+    /* A multi-color gradient that matches your site's palette */
+    background: linear-gradient(90deg, #e62eaf, #eb9e29, #4169E1, #e62eaf);
+    background-size: 200% auto; /* Make the gradient larger than the text to allow for movement */
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-flow 8s linear infinite; /* Apply the animation */
+}
+
+@keyframes gradient-flow {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+/* --- Empty List Message Style --- */
+.empty-list-message {
+    font-size: 1.5rem; /* Larger font size */
+    font-weight: bold;
+    text-align: center;
+    padding: 2rem; /* Add some spacing */
+    line-height: 1.5;
+    /* Re-using the same animated gradient */
+    background: linear-gradient(90deg, #e62eaf, #eb9e29, #4169E1, #e62eaf);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient-flow 8s linear infinite;
+}
+
+/* Responsive adjustment for the empty list message */
+@media (max-width: 480px) {
+    .empty-list-message { font-size: 1.2rem; }
 }
 
 .main-content {
@@ -344,24 +431,83 @@ h2 {
   height: 100%;
   object-fit: cover;
 }
+.trending-card-wrapper {
+    position: relative; /* Needed to position the <p> tag absolutely */
+    flex: none; /* Ensure it behaves correctly inside the flex carousel */
+    margin: 0 10px; /* Keep the original margin from the .card */
+}
+
+/* Style for the anime name paragraph */
+.trending-card-wrapper p {
+    position: absolute;
+    bottom: -30px; /* Position it below the card */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    
+    color: #fff;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 5px 0;
+    border-radius: 0 0 8px 8px;
+
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s ease, bottom 0.3s ease;
+    pointer-events: none; /* So it doesn't interfere with card hover */
+}
+
+/* Show the paragraph when hovering the wrapper */
+.trending-card-wrapper:hover p {
+    opacity: 1;
+    bottom: 0; /* Slide it up into view */
+}
+
+/* --- Genre Section --- */
+.genre-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.genre-card-wrapper {
+    position: relative;
+    flex: none;
+}
+
+.genre-card-wrapper p {
+    position: absolute;
+    bottom: -30px; /* Position it below the card */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 5px 0;
+    border-radius: 0 0 8px 8px;
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s ease, bottom 0.3s ease;
+    pointer-events: none;
+}
+
+.genre-card-wrapper:hover p {
+    opacity: 1;
+    bottom: 0;
+}
+
+/* Hide mobile-only genre navigation by default on desktop */
+.genre-nav-mobile {
+    display: none;
+}
 
 /* Specific rule for genre card images to prevent cropping */
 .genre-card img {
     object-fit: contain; /* Ensures the entire image is visible */
     padding: 1rem; /* Adds some space around the image */
     height: 90%; /* Adjust height to make space for the text below */
-}
-
-.card p {
-  margin: 10px 0;
-  font-weight: bold;
-  color: #333;
-  opacity: 0;
-}
-
-.card p:hover {
-    opacity: 1;
-    z-index: 4;
 }
 
 .carousel-container:hover .card:not(:hover) {
@@ -399,7 +545,7 @@ h2 {
     height: 25rem;
     text-align: center;
     color: #fff;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, width 0.4s ease, height 0.4s ease;
 }
 
 .anime-result-item:hover {
@@ -413,12 +559,14 @@ h2 {
     height: 300px;
     object-fit: cover;
     border-radius: 5px;
+    transition: height 0.4s ease;
 }
 
 .anime-result-item h3 {
     font-size: 1rem;
     margin: 10px 0;
     height: 40px; /* Ensures consistent height */
+    transition: font-size 0.4s ease, height 0.4s ease;
 }
 
 .anime-result-item p {
@@ -436,11 +584,82 @@ h2 {
 
 .reveal {
     position: relative;
-    /* Initial state for elements that haven't been revealed yet */
+    /* Set initial state for repeatable animations */
+    opacity: 0;
     transform: translateY(50px);
-    opacity: 0; /* Initially invisible */
-    /* Remove the CSS transition here, Anime.js will handle it */
-    /* transition: all 1s ease-in-out; */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    margin-top: 2rem; /* Add space between sections */
+    padding-top: 2rem; /* Add space for the line inside the section */
+}
+
+/* The horizontal line for each section */
+.reveal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%; /* Start 10% from the left */
+    width: 80%; /* Cover 80% of the container's width */
+    height: 1px;
+    /* A solid color for a sharp line */
+    background-color: #e62eaf;
+    box-shadow: 0 0 10px #e62eaf; /* Add a glow effect */
+}
+
+/* The state when the element is visible on screen */
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.anime-result-item .add-to-list-btn,
+.anime-result-item .remove-from-list-btn,
+.aotd-item .add-to-list-btn {
+    background-color: #e62eaf;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
+    margin-top: 5px;
+}
+
+.anime-result-item .add-to-list-btn:hover,
+.anime-result-item .remove-from-list-btn:hover,
+.aotd-item .add-to-list-btn:hover {
+    background-color: #4169E1;
+    transform: scale(1.05);
+}
+
+#my-list-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly; /* Changed from center to space-evenly */
+    gap: 2rem;
+    padding: 20px;
+}
+
+/* Styles for when the "My List" container is crowded */
+#my-list-container.is-crowded .anime-result-item {
+    width: 12rem;  /* Shrink width */
+    height: 20rem; /* Shrink height */
+}
+
+#my-list-container.is-crowded .anime-result-item img {
+    height: 200px; /* Adjust image height */
+}
+
+#my-list-container.is-crowded .anime-result-item h3 {
+    font-size: 0.9rem; /* Slightly smaller font */
+    height: 35px;
+    margin-top: 8px;
+}
+
+#my-list-container.is-crowded .anime-result-item .remove-from-list-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    margin-top: 2px;
 }
 
 .aotd-section {
@@ -471,6 +690,49 @@ h2 {
     position: relative; /* Required for the pseudo-element */
     overflow: hidden; /* Clips the rotating pseudo-element */
     z-index: 2; /* Ensure it's above the background but below pop-out elements */
+}
+
+/* Mobile Navigation for AOTD */
+.aotd-nav-mobile {
+    /* This container is now just a holder for the absolute buttons */
+    display: none; /* Still hidden by default on desktop */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10; /* Ensure buttons are on top of the cards */
+    pointer-events: none; /* Allow clicks to pass through the container itself */
+}
+
+/* Show the container on mobile */
+@media (max-width: 480px) {
+    .aotd-nav-mobile {
+        display: block;
+    }
+}
+
+.aotd-nav-btn {
+    background-color: rgba(65, 105, 225, 0.7);
+    border: 1px solid #e62eaf;
+    color: white;
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    /* New styles for positioning */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: auto; /* Make the buttons clickable */
+    z-index: 11;
+}
+
+#aotd-prev-btn { left: 10px; }
+
+#aotd-next-btn {
+    right: 10px;
 }
 
 /* The rotating, glowing border effect */
@@ -625,4 +887,220 @@ footer {
     box-shadow: 0 0 5px currentColor, 0 0 10px currentColor; 
     transform: scale(0); /* Start scaled down */
     opacity: 0;
+}
+
+/* --- Media Queries for Responsiveness --- */
+
+/* Tablet and Mobile View */
+@media (max-width: 900px) {
+    .header {
+        justify-content: space-between;
+        padding: 0 2rem;
+    }
+
+    .header-nav {
+        position: fixed;
+        top: 0;
+        right: -100%; /* Start off-screen */
+        height: 100vh;
+        width: 60vw;
+        background: linear-gradient(135deg, #091c43, #010b0f);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transition: right 0.4s ease-in-out;
+        z-index: 5; /* Below hamburger, above content */
+    }
+
+    .header-nav.active {
+        right: 0; /* Slide in */
+    }
+
+    .header-Btn {
+        width: 80%;
+        font-size: 1.2rem;
+        justify-content: center;
+    }
+
+    .hamburger-menu {
+        display: flex;
+        z-index: 1002; /* Ensure it's above the sticky header background */
+    }
+
+    /* Hamburger animation when active */
+    .hamburger-menu.active span:nth-child(1) {
+        transform: rotate(45deg);
+    }
+
+    .hamburger-menu.active span:nth-child(2) {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    .hamburger-menu.active span:nth-child(3) {
+        transform: rotate(-45deg);
+    }
+
+    .brand {
+        margin-right: 0;
+    }
+
+    /* Hide star trail elements on mobile/tablet */
+    .star-trail-toggle-fixed,
+    #cursor-dot {
+        display: none !important;
+    }
+}
+
+/* Extra small devices (phones, 400px and down) */
+@media (max-width: 480px) {
+    .aotd-section {
+        /* Make the section full-width to contain the scrolling cards */
+        width: 100%; /* Use 100% instead of 100vw to avoid overflow */
+        max-width: 100vw;
+        padding: 0;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Reduce header height on mobile to match smaller logos */
+    header {
+        height: 5.5rem;
+    }
+
+    /* Adjust header logo sizes for very small screens */
+    .falcon {
+        height: 4.5rem;
+        width: 4.5rem;
+    }
+
+    .main-image {
+        height: 5rem;
+        width: 5rem;
+    }
+
+    .brand {
+        height: 4.5rem;
+        width: 10rem; /* Significantly reduce width */
+    }
+
+    .brand-name {
+        height: 100%;
+        width: 100%;
+    }
+
+    .aotd-container {
+        position: relative; /* Required for absolute positioning of children */
+        overflow: hidden; /* Hide cards that are off-screen */
+        height: 27rem; /* Set a fixed height to contain the cards */
+        width: 85vw;
+        margin: 0 auto;
+    }
+
+    .aotd-item {
+        position: absolute; /* Position cards on top of each other */
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: none; /* Hide all cards by default */
+    }
+
+    /* --- Responsive "My List" Section --- */
+    #my-list-container {
+        gap: 0.75rem; /* Space between each list item */
+        padding: 0 1rem; /* Padding on the left and right of the container */
+        flex-direction: column; /* Ensure items are stacked vertically */
+    }
+
+    #my-list-container .anime-result-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 100%; /* Each item takes the full width of the container */
+        height: 100px; /* Set height to 100px as requested */
+        padding: 0.5rem; /* Internal padding */
+        gap: 0.75rem; /* Space between image, title, and button */
+        background-color: rgba(2, 10, 14, 0.5); /* A subtle background color */
+    }
+
+    #my-list-container .anime-result-item:hover {
+        transform: none; /* Disable the scaling effect on mobile */
+        box-shadow: 0 0 8px rgba(230, 46, 175, 0.6); /* Keep a subtle glow */
+    }
+
+    #my-list-container .anime-result-item img {
+        width: 84px; /* Adjust width to be proportional to new height */
+        height: 84px; /* Fill the vertical space within the padding */
+        object-fit: cover;
+        flex-shrink: 0; /* Prevent the image from shrinking */
+    }
+
+    #my-list-container .anime-result-item h3 {
+        flex-grow: 1; /* Allow the title to take up remaining space */
+        text-align: left;
+        margin: 0;
+        font-size: 0.85rem;
+        /* Prevent long titles from wrapping and breaking the layout */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* --- Responsive Genre Section --- */
+    .genre-nav-mobile {
+        display: flex; /* Show the nav buttons on mobile */
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .genre-nav-btn {
+        background-color: rgba(65, 105, 225, 0.7);
+        border: 1px solid #e62eaf;
+        color: white;
+        font-size: 1.5rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .genre-container {
+        position: relative;
+        height: 20rem; /* Give the container a fixed height */
+        width: 85vw;
+        margin: 0 auto;
+        overflow: hidden; /* Hide cards that are off-screen */
+    }
+
+    .genre-card-wrapper {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        /* Add flex properties to center the card and its text */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        /* Instead, hide them with opacity and position them off-screen */
+        opacity: 0;
+        transform: translateX(100%);
+        transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    }
+
+    /* For the active mobile genre card, make the <p> tag always visible */
+    .genre-card-wrapper.is-active-genre p {
+        position: relative; /* Change from absolute to relative for flex centering */
+        bottom: auto; /* Reset bottom positioning */
+        opacity: 1; /* Make it fully visible */
+        margin-top: 1rem; /* Add some space above the text */
+    }
+
+    /* Disable the desktop hover glow/scale effect on mobile for genre cards */
+    .genre-card-wrapper .card:hover {
+        transform: none;
+        box-shadow: none;
+    }
 }

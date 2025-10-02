@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Splash Screen</title>
+    <title>SCANIME</title>
     <link rel="stylesheet" href="scanime.css">
     <link rel="stylesheet" href="scanime2.css">
     <link rel = "icon" type = "image/jpeg" href = "Images/images/favicon.jpeg" >
@@ -26,11 +26,18 @@
             <div class="brand">
                 <img src="Images/images/scanime-writelogo-removebg-preview.png" class="brand-name" alt="scanime">
             </div>
-            <div class="home header-Btn">Home</div>
-            <div class="trending header-Btn">Trending</div>
-            <a href="genre.html" class="genre header-Btn">Genre</a>
-            <div class="myList header-Btn">My List</div>
-            <div class="about header-Btn">About</div>
+            <nav class="header-nav">
+                <div class="home header-Btn">Home</div>
+                <div class="trending header-Btn">Trending</div>
+                <div class="genre header-Btn">Genre</div>
+                <div class="myList header-Btn">My List</div>
+                <div class="about header-Btn">About</div>
+            </nav>
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
@@ -65,52 +72,98 @@
         
         <!-- Anime of the Day Section -->
         <section id="home-section" class="aotd-section">
-            <h2>Anime of the Day</h2>
+            <h2 class="gradient-heading">Anime of the Day</h2>
             <div id="anime-of-the-day-container" class="aotd-container">
                 <!-- Anime of the day will be loaded here by JavaScript -->
+                <!-- Navigation buttons for mobile view (MOVED INSIDE) -->
+                <div class="aotd-nav-mobile">
+                    <button id="aotd-prev-btn" class="aotd-nav-btn" aria-label="Previous Anime">
+                        &larr;
+                    </button>
+                    <button id="aotd-next-btn" class="aotd-nav-btn" aria-label="Next Anime">
+                        &rarr;
+                    </button>
+                </div>
             </div>
 
         </section>
         
         <section id="trending-section" class="reveal">
-            <h2>Trending</h2>
+            <h2 class="gradient-heading">Trending</h2>
             <div class="carousel-container">
                 <div class="carousel" id="carousel">
-                  <div class="card"><img src="Images/images/Death-Note anime.jpg" alt="Death-Note"><p>Death Note</p></div>
-                  <div class="card"><img src="Images/images/one-piece.jpg" alt="one-piece"><p>One Piece</p></div>
-                  <div class="card"><img src="Images/images/naruto.jpg" alt="Train Track"><p>Naruto</p></div>
-                  <div class="card"><img src="Images/images/demon-anime.jpg" alt="Gamer"><p>Demon Slayer</p></div>
-                  <div class="card"><img src="Images/images/dragon ball.jpg" alt="Gift"><p>Dragon Ball Z</p></div>
-                  <div class="card"><img src="Images/images/full-metal anime.jpg" alt="Accessories"><p>Full Metal Alchemist</p></div>
-                  <div class="card"><img src="Images/images/jujutsu anime.jpg" alt="Dress"><p>Jujutsu Kaisen</p></div>
-                  <div class="card"><img src="/Images/images/myhacademy-anime.jpg" alt="Train Track"><p>My Hero Academia</p></div>
-                  <div class="card"><img src="Images/images/bleach.jpg" alt="Gamer"><p>Bleach</p></div>
-                  <div class="card"><img src="Images/images/aot-anime.jpg" alt="Gift"><p>Attack On Titan</p></div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="Images/images/Death-Note anime.jpg" alt="Death-Note"></div><p>Death Note</p>
+                  </div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="Images/images/one-piece.jpg" alt="one-piece"></div><p>One Piece</p>
+                  </div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="Images/images/naruto.jpg" alt="Naruto"></div><p>Naruto</p>
+                  </div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="Images/images/demon-anime.jpg" alt="Demon Slayer"></div><p>Demon Slayer</p>
+                  </div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="Images/images/dragon ball.jpg" alt="Dragon Ball Z"></div><p>Dragon Ball Z</p>
+                  </div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="Images/images/full-metal anime.jpg" alt="Full Metal Alchemist"></div><p>Full Metal Alchemist</p>
+                  </div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="Images/images/jujutsu anime.jpg" alt="Jujutsu Kaisen"></div><p>Jujutsu Kaisen</p>
+                  </div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="/Images/images/myhacademy-anime.jpg" alt="My Hero Academia"></div><p>My Hero Academia</p>
+                  </div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="Images/images/bleach.jpg" alt="Bleach"></div><p>Bleach</p>
+                  </div>
+                  <div class="trending-card-wrapper">
+                    <div class="card"><img src="Images/images/aot-anime.jpg" alt="Attack On Titan"></div><p>Attack On Titan</p>
+                  </div>
                 </div>
             </div>
         </section>
 
+        <!-- My List Section -->
+        <section id="my-list-section" class="reveal">
+            <h2 class="gradient-heading">My List</h2>
+            <div id="my-list-container" class="results-container" style="min-height: 200px; /* Give it some height when empty */">
+                <!-- Saved anime will be loaded here by JavaScript -->
+            </div>
+        </section>
+
         <section id="genre-section" class="reveal">
-            <h2>Genre</h2>
-            <div class="genre-container" style="display: flex; justify-content: space-between;">
-                <div class="genre-card card" id="genre-action" >
-                    <img src="Images/images/63520c0f00d334665064a21b-sailor-moon-season-1-part-1-dvd-only-removebg-preview.png" alt="Fantasy">
+            <h2 class="gradient-heading">Genre</h2>
+            <!-- Navigation buttons for mobile view -->
+            <div class="genre-nav-mobile">
+                <button id="genre-prev-btn" class="genre-nav-btn" aria-label="Previous Genre">
+                    &larr;
+                </button>
+                <button id="genre-next-btn" class="genre-nav-btn" aria-label="Next Genre">
+                    &rarr;
+                </button>
+            </div>
+            <div class="genre-container">
+                <div class="genre-card-wrapper">
+                    <div class="genre-card card" id="genre-fantasy"><img src="Images/images/63520c0f00d334665064a21b-sailor-moon-season-1-part-1-dvd-only-removebg-preview.png" alt="Fantasy"></div>
                     <p>Fantasy</p>
                 </div>
-                <div class="genre-card card" id="genre-adventure">
-                    <img src="Images/images/Ash_Ketchum-removebg-preview.png" alt="Adventure">
+                <div class="genre-card-wrapper">
+                    <div class="genre-card card" id="genre-adventure"><img src="Images/images/Ash_Ketchum-removebg-preview.png" alt="Adventure"></div>
                     <p>Adventure</p>
                 </div>
-                <div class="genre-card card" id="genre-comedy">
-                    <img src="Images/images/gintoki-sakata-gin-tama-kagura-samurai-anime-body-transparent-background-png-clipart--comhiclipartmthka-removebg-preview.png" alt="Comedy">
+                <div class="genre-card-wrapper">
+                    <div class="genre-card card" id="genre-comedy"><img src="Images/images/gintoki-sakata-gin-tama-kagura-samurai-anime-body-transparent-background-png-clipart--comhiclipartmthka-removebg-preview.png" alt="Comedy"></div>
                     <p>Comedy</p>
                 </div>
-                <div class="genre-card card" id="genre-drama">
-                    <img src="Images/images/49ba2479e05d6599533d2430b472b7ee-removebg-preview.png" alt="Drama">
+                <div class="genre-card-wrapper">
+                    <div class="genre-card card" id="genre-drama"><img src="Images/images/49ba2479e05d6599533d2430b472b7ee-removebg-preview.png" alt="Drama"></div>
                     <p>Drama</p>
                 </div>
-                <div class="genre-card card" id="genre-fantasy">
-                    <div style="object-fit: contain; width: 20rem; height: 20rem; margin-top: -1rem;"><img src="Images/images/goku-removebg-preview.png" alt="Action"></div>
+                <div class="genre-card-wrapper">
+                    <div class="genre-card card" id="genre-action"><img src="Images/images/goku-removebg-preview.png" alt="Action" style="height: 25rem; width: 20rem; margin-top: -1rem;"></div>
                     <p>Action</p>
                 </div>
             </div>
@@ -118,8 +171,8 @@
         
         <section id="about-section" class="particle reveal">
             <div class="text-center mb-10">
-                <h1 class="text-4xl font-extrabold text-violet-400 mb-2">Multi-Card Particle Reveal</h1>
-                <p class="text-lg text-gray-400">Each card has an independent, randomly moving particle field. Hover to activate.</p>
+                <h1 class="gradient-heading" style="padding: 0.5rem; margin-top: -1rem;">About</h1>
+                <p class="animated-subtitle" style="margin-bottom: 2rem; font-size: 1.5rem;">A spin-off Anime Search Webiste made with Anime.js</p>
             </div>
 
             <div class="main-container">

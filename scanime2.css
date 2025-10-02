@@ -9,7 +9,7 @@
     align-items: center;
     min-height: 100vh;
     overflow-x: hidden;
-    padding: 2rem 1rem;
+    padding: 1rem 1rem;
 }
 
 .main-container {
@@ -87,4 +87,19 @@
     opacity: 0; /* Initially invisible */
     /* Remove the CSS transition here, Anime.js will handle it */
     /* transition: all 1s ease-in-out; */
+}
+
+/* --- Media Queries for Responsiveness --- */
+@media (max-width: 768px) {
+    .main-container {
+        gap: 2rem; /* Reduce the large gap between cards */
+        flex-direction: column; /* Stack cards vertically */
+        align-items: center; /* Center the stacked cards */
+    }
+
+    .card-wrapper {
+        width: 90vw; /* Make cards wide on mobile */
+        max-width: 20rem; /* But don't let them get bigger than their desktop size */
+        height: 22rem; /* Adjust height for mobile layout */
+    }
 }
