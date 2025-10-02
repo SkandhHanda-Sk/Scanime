@@ -135,12 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fade in header, main content, and star trail button after the splash screen is gone
     setTimeout(() => {
         anime({
-            targets: [header, mainContent, '#starTrailToggleBtn'],
+            targets: [header, mainContent],
             opacity: 1,
             duration: 800,
             easing: 'easeOutQuad',
-            delay: anime.stagger(100), // Stagger the fade-in slightly
-            begin: () => document.getElementById('starTrailToggleBtn').style.pointerEvents = 'auto'
+            delay: anime.stagger(100) // Stagger the fade-in slightly
         });
     }, 5000); // Match the splash screen timeout
 
@@ -207,12 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-
-    // --- Star Trail Effect ---
-    const starTrailToggleBtn = document.getElementById('starTrailToggleBtn');
-    const starContainer = document.getElementById('star-container');
-    const cursorDot = document.getElementById('cursor-dot');
-
     const searchForm = document.querySelector('.search-form');
     const searchInput = document.getElementById('searchInput');
     const resultsContainer = document.getElementById('results');
@@ -277,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <img src="${anime.images.jpg.large_image_url || anime.images.jpg.image_url}" alt="Poster for ${anime.title}" style="pointer-events: none;">
                 <h3>${anime.title}</h3>
                 <button class="add-to-list-btn" data-anime-id="${anime.mal_id}">
-                    ${isAnimeInList(anime.mal_id) ? 'In List' : 'Add to List'}
+                    ${window.myListApp.isAnimeInList(anime.mal_id) ? 'In List' : 'Add to List'}
                 </button>
                 
             `;
@@ -291,127 +284,18 @@ document.addEventListener('DOMContentLoaded', () => {
             button.addEventListener('click', (e) => {
                 const animeId = parseInt(e.target.dataset.animeId);
                 const animeData = animeList.find(a => a.mal_id === animeId);
-                toggleAnimeInList(animeData);
+                window.myListApp.toggleAnimeInList(animeData);
                 
                 // Instead of re-rendering the whole list, just update the button itself.
                 e.target.textContent = 'In List';
                 e.target.disabled = true; // Prevents multiple clicks
 
-                displayMyList();
+                window.myListApp.displayMyList();
             });
         });
 
          anime({
             targets: '.anime-result-item',opacity: [0, 1],duration: 1000,delay: anime.stagger(200)
-        });
-    }
-
-    // --- My List Functionality (using localStorage) ---
-
-    // Define different list size limits for desktop and mobile.
-    const MAX_LIST_SIZE_DESKTOP = 20;
-    const MAX_LIST_SIZE_MOBILE = 10;
-
-    /**
-     * Retrieves the user's list from localStorage.
-     * @returns {Array} An array of anime objects.
-     */
-    function getMyList() {
-        return JSON.parse(localStorage.getItem('myAnimeList')) || [];
-    }
-
-    /**
-     * Saves the user's list to localStorage.
-     * @param {Array} list - The array of anime objects to save.
-     */
-    function saveMyList(list) {
-        localStorage.setItem('myAnimeList', JSON.stringify(list));
-    }
-
-    /**
-     * Checks if an anime is already in the list.
-     * @param {number} animeId - The MAL ID of the anime.
-     * @returns {boolean} True if the anime is in the list.
-     */
-    function isAnimeInList(animeId) {
-        const myList = getMyList();
-        return myList.some(item => item.mal_id === animeId);
-    }
-
-    /**
-     * Adds or removes an anime from the list.
-     * @param {object} animeData - The full anime object from the API.
-     */
-    function toggleAnimeInList(animeData) {
-        let myList = getMyList();
-        if (isAnimeInList(animeData.mal_id)) {
-            // Remove it
-            myList = myList.filter(item => item.mal_id !== animeData.mal_id);
-            saveMyList(myList);
-        } else {
-            // Determine the correct list size limit based on viewport width.
-            const isMobile = window.innerWidth <= 900; // Use 900px to be consistent with other mobile styles
-            const currentMaxListSize = isMobile ? MAX_LIST_SIZE_MOBILE : MAX_LIST_SIZE_DESKTOP;
-            const alertMessage = `Your list is full! You can save a maximum of ${currentMaxListSize} anime.`;
-
-            // Check if the list is full before adding a new item.
-            if (myList.length >= currentMaxListSize) {
-                alert(alertMessage);
-                return; // Stop the function to prevent adding the item.
-            }
-            // If not full, add it.
-            myList.push(animeData);
-            saveMyList(myList);
-        }
-    }
-
-    /**
-     * Renders the anime cards for the "My List" section.
-     */
-    function displayMyList() {
-        const myListContainer = document.getElementById('my-list-container');
-        const myList = getMyList();
-
-        // Determine which list to display based on viewport width
-        const isMobile = window.innerWidth <= 900;
-        const listToDisplay = isMobile ? myList.slice(0, MAX_LIST_SIZE_MOBILE) : myList;
-
-        const CROWDED_THRESHOLD = 10; // The number of items before cards shrink
-
-        // Add or remove a class based on the number of items in the list
-        if (listToDisplay.length > CROWDED_THRESHOLD) {
-            myListContainer.classList.add('is-crowded');
-        } else {
-            myListContainer.classList.remove('is-crowded');
-        }
-
-        myListContainer.innerHTML = ''; // Clear previous content
-
-        if (listToDisplay.length === 0) {
-            myListContainer.innerHTML = '<p class="empty-list-message" style="font-size: 2rem;">Your list is empty. Add anime from search or "Anime of the Day"!</p>';
-            return;
-        }
-
-        // Iterate over the potentially truncated list
-        listToDisplay.forEach(anime => {
-            const animeDiv = document.createElement('div');
-            animeDiv.className = 'anime-result-item'; // Reuse existing class
-
-            animeDiv.innerHTML = `
-                <img src="${anime.images.jpg.large_image_url || anime.images.jpg.image_url}" alt="Poster for ${anime.title}">
-                <h3>${anime.title}</h3>
-                <button class="remove-from-list-btn" data-anime-id="${anime.mal_id}">Remove</button>
-            `;
-            myListContainer.appendChild(animeDiv);
-        });
-
-        // Add event listeners to the "Remove" buttons
-        myListContainer.querySelectorAll('.remove-from-list-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const animeId = parseInt(e.target.dataset.animeId);
-                toggleAnimeInList({ mal_id: animeId }); // We only need the ID to remove
-                displayMyList(); // Refresh the list view
-            });
         });
     }
 
@@ -499,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <img src="${anime.images.jpg.large_image_url || anime.images.jpg.image_url}" alt="Poster for ${anime.title}" style="pointer-events: none;">
                 <h3>${anime.title}</h3>
                 <button class="add-to-list-btn" data-anime-id="${anime.mal_id}" style="margin-top: 10px; z-index: 5; position: relative;">
-                     ${isAnimeInList(anime.mal_id) ? 'In List' : 'Add to List'}
+                     ${window.myListApp.isAnimeInList(anime.mal_id) ? 'In List' : 'Add to List'}
                 </button>
             `;
             container.appendChild(animeDiv);
@@ -611,9 +495,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!isMobileView) e.stopPropagation(); // Stop propagation only on desktop
                 const animeId = parseInt(e.target.dataset.animeId);
                 const animeData = animeList.find(a => a.mal_id === animeId);
-                toggleAnimeInList(animeData);
+                window.myListApp.toggleAnimeInList(animeData);
                 button.textContent = 'In List';
-                displayMyList();
+                window.myListApp.displayMyList();
             });
         });
 
@@ -762,7 +646,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAnimeOfTheDay();
 
     // Also load "My List" on page load
-    displayMyList();
+    window.myListApp.displayMyList();
 
     // --- Animation Performance Observer ---
     const animationObserver = new IntersectionObserver((entries) => {
@@ -808,197 +692,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof window.startParticleEffects === 'function') {
         window.startParticleEffects();
     }
-    // --- Star Trail Mouse Pointer Functionality ---
-    let currentStarTrailMode = 'off'; // 'off', 'pinkBlue', 'yellowBeam'
-    let starTrailMouseMoveHandler = null; // To store the event listener function
-
-    // --- Time-based variables for a gapped trail ---
-    let lastEventTime = 0;
-    const gappedTrailInterval = 25; // Interval in ms for the gapped trail. Higher = more gaps.
-
-    // --- Interpolation variables for a gapless trail ---
-    let lastMouseX = 0;
-    let lastMouseY = 0;
-    const starDensity = 3; // Create a star every 3 pixels of movement for high density.
-
-    // Define different color schemes for the star trail
-    const COLOR_SCHEMES = {
-        pinkBlue: ['#FF69B4', '#4169E1'], // Hot Pink, Royal Blue
-        yellowBeam: ['#FFFF00', '#FFD700', '#FFA500'] // Yellow, Gold, Orange for a warm beam
-    };
-    let activeColors = []; // Will hold the colors for the currently active mode
-
-    // Define the order of modes for the button to cycle through
-    const STAR_TRAIL_MODES_CYCLE = ['off', 'pinkBlue', 'yellowBeam'];
-
-    /**
-     * Creates a single star element at the given coordinates.
-     * @param {number} x - The x coordinate.
-     * @param {number} y - The y coordinate.
-     * @returns {HTMLElement} The created star element.
-     */
-    function createStar(x, y) {
-        const star = document.createElement('div');
-        star.classList.add('star');
-        
-        // Assign random color dynamically from the activeColors
-        const color = activeColors[anime.random(0, activeColors.length - 1)];
-        star.style.backgroundColor = color;
-        star.style.color = color; // Used for the box-shadow's currentColor
-        
-        // Position the star so its center is under the cursor
-        star.style.left = `${x - 3}px`; // Adjusted for 6px width
-        star.style.top = `${y - 3}px`; // Adjusted for 6px height
-        
-        starContainer.appendChild(star);
-        return star;
-    }
-
-    /**
-     * Animates a star to appear, move slightly, and disappear.
-     * @param {HTMLElement} star - The star element to animate.
-     */
-    function animateStar(star) {
-        // Longer duration for a longer, smoother tail effect
-        const duration = anime.random(1000, 2000); 
-        
-        anime({
-            targets: star,
-            // Appearance and movement
-            // We remove translateX and translateY to keep the trail perfectly smooth
-            scale: [
-                { value: 1, duration: 100, easing: 'easeOutQuad' }, // Quick pop to full size
-                { value: 0, delay: duration * 0.5, duration: duration * 0.5 } // Slow shrink over the second half
-            ],
-            opacity: [
-                { value: 0.8, duration: 100 }, // Quick fade in
-                { value: 0, delay: duration * 0.5, duration: duration * 0.5 } // Slow fade out
-            ],
-            duration: duration,
-            easing: 'linear',
-            // Cleanup
-            complete: function(anim) {
-                star.remove(); 
-            }
-        });
-    }
-
-    // Helper function to clean up any active star trail effect
-    function _cleanupStarTrail() {
-        if (starTrailMouseMoveHandler) {
-            document.removeEventListener('mousemove', starTrailMouseMoveHandler);
-            starTrailMouseMoveHandler = null;
-        }
-        // Reset interpolation variables
-        lastMouseX = 0;
-        lastMouseY = 0;
-        // Reset time-based variables
-        lastEventTime = 0;
-
-        document.body.classList.remove('star-trail-active'); // Show default cursor
-        cursorDot.style.display = 'none'; // Hide the custom cursor dot
-        starContainer.innerHTML = ''; // Clear all existing stars
-    }
-
-    // Helper function to activate a specific star trail mode
-    function _activateStarTrail(mode) {
-        if (mode === 'off') {
-            _cleanupStarTrail(); // Ensure everything is turned off
-            return;
-        }
-
-        // Set the colors based on the chosen mode
-        activeColors = COLOR_SCHEMES[mode];
-        
-        // Choose the correct handler based on the mode
-        if (mode === 'pinkBlue') {
-            // --- GAPPED TRAIL LOGIC (Time-based) ---
-            starTrailMouseMoveHandler = (event) => {
-                cursorDot.style.left = `${event.clientX}px`;
-                cursorDot.style.top = `${event.clientY}px`;
-
-                const currentTime = Date.now();
-                if (currentTime - lastEventTime > gappedTrailInterval) {
-                    animateStar(createStar(event.clientX, event.clientY)); // Call animateStar here
-                    lastEventTime = currentTime;
-                }
-            };
-        } else if (mode === 'yellowBeam') {
-            // --- DENSE TRAIL LOGIC (Interpolation) ---
-            starTrailMouseMoveHandler = (event) => {
-                const currentMouseX = event.clientX;
-                const currentMouseY = event.clientY;
-
-                cursorDot.style.left = `${currentMouseX}px`;
-                cursorDot.style.top = `${currentMouseY}px`;
-
-                if (lastMouseX === 0 && lastMouseY === 0) {
-                    lastMouseX = currentMouseX;
-                    lastMouseY = currentMouseY;
-                    return;
-                }
-
-                const dx = currentMouseX - lastMouseX;
-                const dy = currentMouseY - lastMouseY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const angle = Math.atan2(dy, dx);
-
-                if (distance > 0) {
-                    const numStarsToCreate = Math.ceil(distance / starDensity);
-                    for (let i = 1; i <= numStarsToCreate; i++) {
-                        const progress = i / numStarsToCreate;
-                        const x = lastMouseX + Math.cos(angle) * (distance * progress);
-                        const y = lastMouseY + Math.sin(angle) * (distance * progress);
-                    animateStar(createStar(x, y)); // Call animateStar here
-                    }
-                }
-
-                lastMouseX = currentMouseX;
-                lastMouseY = currentMouseY;
-            };
-        }
-
-        document.addEventListener('mousemove', starTrailMouseMoveHandler);
-        document.body.classList.add('star-trail-active'); // Hide default cursor
-        cursorDot.style.display = 'block'; // Show the custom cursor dot
-    }
-
-    starTrailToggleBtn.addEventListener('click', () => {
-        // Prevent activation on mobile/tablet devices
-        if (window.innerWidth <= 900) {
-            _cleanupStarTrail(); // Ensure it's off
-            return;
-        }
-
-        const currentIndex = STAR_TRAIL_MODES_CYCLE.indexOf(currentStarTrailMode);
-        const nextIndex = (currentIndex + 1) % STAR_TRAIL_MODES_CYCLE.length;
-        currentStarTrailMode = STAR_TRAIL_MODES_CYCLE[nextIndex];
-
-        // First, clean up any existing effect.
-        _cleanupStarTrail();
-        // Then, activate the new one (if it's not 'off').
-        _activateStarTrail(currentStarTrailMode);
-
-        // Update button text based on the new mode
-        switch (currentStarTrailMode) {
-            case 'off':
-                starTrailToggleBtn.textContent = 'Star Trail (Off)';
-                break;
-            case 'pinkBlue':
-                starTrailToggleBtn.textContent = 'Trail: Default';
-                break;
-            case 'yellowBeam':
-                starTrailToggleBtn.textContent = 'Trail: Golden Beam';
-                break;
-        }
-    });
-
-    // Add a resize listener to disable the effect if the window becomes too small
-    window.addEventListener('resize', () => {
-        if (window.innerWidth <= 900 && currentStarTrailMode !== 'off') {
-            _cleanupStarTrail();
-            currentStarTrailMode = 'off';
-            starTrailToggleBtn.textContent = 'Star Trail (Off)';
-        }
-    });
 });

@@ -1,0 +1,153 @@
+/* ==========================================================================
+   Anime of the Day - Base Styles
+   ========================================================================== */
+
+.aotd-section {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.aotd-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4rem;
+    perspective: 1000px; /* Creates the 3D space for the cards */
+}
+
+.aotd-item {
+    background-color: #f208d331;
+    border: 1px solid #444444;
+    border-radius: 8px;
+    padding: 10px;
+    width: 18rem;
+    height: 25rem;
+    text-align: center;
+    color: #fff;
+    transition: transform 0.4s ease; /* Smooth transition for the 3D effect */
+    transform-style: preserve-3d; /* Allows the card to be manipulated in 3D space */
+    position: relative; /* Required for the pseudo-element */
+    overflow: hidden; /* Clips the rotating pseudo-element */
+    z-index: 2; /* Ensure it's above the background but below pop-out elements */
+}
+
+.aotd-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.aotd-item h3 {
+    font-size: 1rem;
+    margin: 10px 0;
+    height: 40px; /* Ensures consistent height */
+    overflow: hidden;
+}
+
+/* --- Rotating Border Effect --- */
+.aotd-item::before {
+    content: '';
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    top: -25%;
+    left: -25%;
+    z-index: -1;
+    background: conic-gradient(
+        from var(--aotd-rotate, 0deg),
+        transparent 40%,
+        #e62eaf,
+        #eb9e29,
+        transparent 60%
+    );
+    transform: rotate(var(--aotd-rotate, 0deg));
+}
+
+/* --- Desktop Hover Animations --- */
+@keyframes spinning-top {
+    0% { transform: scale(1) translateZ(0) rotateY(0deg); }
+    30% { transform: scale(0.8) translateZ(20px) rotateY(180deg); }
+    100% { transform: scale(1.2) translateZ(60px) rotateY(360deg); }
+}
+
+@keyframes spinning-top-reverse {
+    0% { transform: scale(1.2) translateZ(60px) rotateY(360deg); }
+    70% { transform: scale(0.8) translateZ(20px) rotateY(180deg); }
+    100% { transform: scale(1) translateZ(0) rotateY(0deg); }
+}
+
+.aotd-item.is-hovered {
+    z-index: 10;
+    animation: spinning-top 1.5s ease-out forwards;
+}
+
+.aotd-item.is-leaving {
+    animation: spinning-top-reverse 1.5s ease-out forwards;
+}
+
+/* --- Mobile Navigation (Hidden on Desktop) --- */
+.aotd-nav-mobile {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.aotd-nav-btn {
+    background-color: rgba(65, 105, 225, 0.7);
+    border: 1px solid #e62eaf;
+    color: white;
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: auto;
+    z-index: 11;
+}
+
+#aotd-prev-btn { left: 10px; }
+#aotd-next-btn { right: 10px; }
+
+/* ==========================================================================
+   Anime of the Day - Responsive Styles
+   ========================================================================== */
+@media (max-width: 480px) {
+    .aotd-section {
+        width: 100%;
+        max-width: 100vw;
+        padding: 0;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .aotd-container {
+        position: relative;
+        overflow: hidden;
+        height: 27rem;
+        width: 85vw;
+        margin: 0 auto;
+    }
+
+    .aotd-item {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: none;
+    }
+
+    .aotd-nav-mobile {
+        display: block;
+    }
+}

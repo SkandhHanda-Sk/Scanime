@@ -1,0 +1,238 @@
+/* --- Media Queries for Responsiveness --- */
+
+/* ==========================================================================
+   Tablet and Larger Mobile View (max-width: 900px)
+   ========================================================================== */
+@media (max-width: 900px) {
+    .header {
+        justify-content: space-between;
+        padding: 0 2rem;
+    }
+
+    .header-nav {
+        position: fixed;
+        top: 0;
+        right: -100%; /* Start off-screen */
+        height: 100vh;
+        width: 60vw;
+        background: linear-gradient(135deg, #091c43, #010b0f);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transition: right 0.4s ease-in-out;
+        z-index: 5; /* Below hamburger, above content */
+    }
+
+    .header-nav.active {
+        right: 0; /* Slide in */
+    }
+
+    .header-Btn {
+        width: 80%;
+        font-size: 1.2rem;
+        justify-content: center;
+    }
+
+    .hamburger-menu {
+        display: flex;
+        z-index: 1002; /* Ensure it's above the sticky header background */
+    }
+
+    /* Hamburger animation when active */
+    .hamburger-menu.active span:nth-child(1) {
+        transform: rotate(45deg);
+    }
+
+    .hamburger-menu.active span:nth-child(2) {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    .hamburger-menu.active span:nth-child(3) {
+        transform: rotate(-45deg);
+    }
+
+    .brand {
+        margin-right: 0;
+    }
+}
+
+/* ==========================================================================
+   About Section Cards (max-width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .main-container {
+        gap: 2rem; /* Reduce the large gap between cards */
+        flex-direction: column; /* Stack cards vertically */
+        align-items: center; /* Center the stacked cards */
+    }
+
+    .card-wrapper {
+        width: 90vw; /* Make cards wide on mobile */
+        max-width: 20rem; /* But don't let them get bigger than their desktop size */
+        height: 22rem; /* Adjust height for mobile layout */
+    }
+}
+
+/* ==========================================================================
+   Small Mobile View (max-width: 480px)
+   ========================================================================== */
+
+/* --- Media Queries for Responsiveness --- */
+
+/* Tablet and Mobile View */
+@media (max-width: 900px) {
+    .header {
+        justify-content: space-between;
+        padding: 0 2rem;
+    }
+
+    .header-nav {
+        position: fixed;
+        top: 0;
+        right: -100%; /* Start off-screen */
+        height: 100vh;
+        width: 60vw;
+        background: linear-gradient(135deg, #091c43, #010b0f);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transition: right 0.4s ease-in-out;
+        z-index: 5; /* Below hamburger, above content */
+    }
+
+    .header-nav.active {
+        right: 0; /* Slide in */
+    }
+
+    .header-Btn {
+        width: 80%;
+        font-size: 1.2rem;
+        justify-content: center;
+    }
+
+    .hamburger-menu {
+        display: flex;
+        z-index: 1002; /* Ensure it's above the sticky header background */
+    }
+
+    /* Hamburger animation when active */
+    .hamburger-menu.active span:nth-child(1) {
+        transform: rotate(45deg);
+    }
+
+    .hamburger-menu.active span:nth-child(2) {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    .hamburger-menu.active span:nth-child(3) {
+        transform: rotate(-45deg);
+    }
+
+    .brand {
+        margin-right: 0;
+    }
+}
+
+/* Extra small devices (phones, 400px and down) */
+@media (max-width: 480px) {
+    /* --- Responsive "My List" Section --- */
+    #my-list-container {
+        gap: 0.75rem; /* Space between each list item */
+        padding: 0 1rem; /* Padding on the left and right of the container */
+        flex-direction: column; /* Ensure items are stacked vertically */
+    }
+
+    #my-list-container .anime-result-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        width: 100%; /* Each item takes the full width of the container */
+        height: 100px; /* Set height to 100px as requested */
+        padding: 0.5rem; /* Internal padding */
+        gap: 0.75rem; /* Space between image, title, and button */
+        background-color: rgba(2, 10, 14, 0.5); /* A subtle background color */
+    }
+
+    #my-list-container .anime-result-item:hover {
+        transform: none; /* Disable the scaling effect on mobile */
+        box-shadow: 0 0 8px rgba(230, 46, 175, 0.6); /* Keep a subtle glow */
+    }
+
+    #my-list-container .anime-result-item img {
+        width: 84px; /* Adjust width to be proportional to new height */
+        height: 84px; /* Fill the vertical space within the padding */
+        object-fit: cover;
+        flex-shrink: 0; /* Prevent the image from shrinking */
+    }
+
+    #my-list-container .anime-result-item h3 {
+        flex-grow: 1; /* Allow the title to take up remaining space */
+        text-align: left;
+        margin: 0;
+        font-size: 0.85rem;
+        /* Prevent long titles from wrapping and breaking the layout */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* --- Responsive Genre Section --- */
+    .genre-nav-mobile {
+        display: flex; /* Show the nav buttons on mobile */
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .genre-nav-btn {
+        background-color: rgba(65, 105, 225, 0.7);
+        border: 1px solid #e62eaf;
+        color: white;
+        font-size: 1.5rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .genre-container {
+        position: relative;
+        height: 20rem; /* Give the container a fixed height */
+        width: 85vw;
+        margin: 0 auto;
+        overflow: hidden; /* Hide cards that are off-screen */
+    }
+
+    .genre-card-wrapper {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        /* Add flex properties to center the card and its text */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        /* Instead, hide them with opacity and position them off-screen */
+        opacity: 0;
+        transform: translateX(100%);
+        transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    }
+
+    /* For the active mobile genre card, make the <p> tag always visible */
+    .genre-card-wrapper.is-active-genre p {
+        position: relative; /* Change from absolute to relative for flex centering */
+        bottom: auto; /* Reset bottom positioning */
+        opacity: 1; /* Make it fully visible */
+        margin-top: 1rem; /* Add some space above the text */
+    }
+
+    /* Disable the desktop hover glow/scale effect on mobile for genre cards */
+    .genre-card-wrapper .card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
